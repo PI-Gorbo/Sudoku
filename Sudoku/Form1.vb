@@ -111,13 +111,20 @@ Class Cell
     Dim OriginX, OriginY, count As Integer
     Public Candidates(2, 2) As Label
     Public Valuelabel As New Label
-    Public Value As String
+    'Public Value As String
+    Dim Val_Candidates As New ArrayList
 
     Public Sub New(Ox As Integer, Oy As Integer)
-        count = 1
+        'Define Origin as Origin X and Origin Y
         OriginX = Ox
         OriginY = Oy
+        count = 1
+        'Fill the Val Candidates with all possible candidates for a certain cell.
+        For i = 0 To 8
+            Val_Candidates.Add(i + 1)
+        Next
 
+        'Draw Candidates
         For CountY = 0 To 2
             For CountX = 0 To 2
 
@@ -137,6 +144,7 @@ Class Cell
             Next
         Next
 
+        'Create and Draw valuelabel - DEFAUlT as Dissappeared.
         With Valuelabel
             .Size = New Size(GameBoard.TOTAL_CELL_SIZEpx, GameBoard.TOTAL_CELL_SIZEpx)
             .BackColor = Color.White
@@ -147,48 +155,32 @@ Class Cell
             .Font = New Font("Symbol", 14, FontStyle.Bold)
 
         End With
-
         Form1.Controls.Add(Valuelabel)
+
     End Sub
 
     Sub Lbl_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
-
-        DirectCast(sender, Label).Text = ""
-        If ValueCheck() Then
+        'Event call for label
+        Dim x As Label = DirectCast(sender, Label)
+        Val_Candidates.Remove(Convert.ToInt16(x.Text))
+        Form1.Lstbx.Items.Add(Val_Candidates.r)
+        x.Text = ""
+        'If there is only 1 value in the array.
+        If Val_Candidates.Count = 1 Then
             For Cols = 0 To 2
                 For Rows = 0 To 2
                     Candidates(Cols, Rows).Visible = False
                     Candidates(Cols, Rows).Enabled = False
                 Next
             Next
-
+            Val_Candidates.Sort()
             Valuelabel.Visible = True
             Valuelabel.Enabled = True
-            Valuelabel.Text = Value
+            Valuelabel.Text = Val_Candidates(0)
 
         End If
     End Sub
 
-    Private Function ValueCheck()
-        Value = ""
-        Dim count As Integer
-        count = 0
-
-        For Cols = 0 To 2
-            For Rows = 0 To 2
-                If count > 1 Then
-                    Return False
-
-                Else
-                    If Candidates(Cols, Rows).Text <> "" Then
-                        count += 1
-                        Value = Candidates(Cols, Rows).Text
-                    End If
-                End If
-            Next
-        Next
-        Return True
-    End Function
 
 End Class
 
