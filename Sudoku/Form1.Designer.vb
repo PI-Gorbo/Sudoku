@@ -28,7 +28,7 @@ Partial Class Form1
         'Lstbx
         '
         Me.Lstbx.FormattingEnabled = True
-        Me.Lstbx.Location = New System.Drawing.Point(860, 48)
+        Me.Lstbx.Location = New System.Drawing.Point(674, 49)
         Me.Lstbx.Name = "Lstbx"
         Me.Lstbx.Size = New System.Drawing.Size(303, 485)
         Me.Lstbx.TabIndex = 0
