@@ -77,6 +77,18 @@ Public Class Gameboard
 
     End Sub
 
+    Public Sub Import_NewBoard()
+        Dim TempCells = Database.ExportNewBoard()
+
+        For cols = 0 To 8
+            For rows = 0 To 8
+                Cell_Array(cols, rows).Import_Candidates(TempCells(cols, rows))
+            Next
+        Next
+
+    End Sub
+
+
 End Class
 
 Public Class Box
@@ -192,24 +204,18 @@ Public Class Cell
         End If
     End Sub
 
-    'Private Sub Import_Candidates(P_Candidates As ArrayList)
-    '    Val_Candidates = P_Candidates
+    Public Sub Import_Candidates(Imported_Candidates As ArrayList)
+        For cols = 0 To 2
+            For rows = 0 To 2
+                For Each ele In Imported_Candidates
+                    If ele = defaultvalue Then
+                        Candidates(cols, rows).Text = defaultvalue
+                    End If
+                Next
+            Next
+        Next
 
-    '    For CountX = 0 To 2
-    '        For CountY = 0 To 2
-
-    '            Candidates(CountX, CountY).Text = " "
-
-    '            For Each ele In Val_Candidates
-    '                If ele = Candidates(CountX, CountY) Then
-    '                    Candidates(CountX, CountY).Text = Convert.ToString(defaultvalue)
-    '                End If
-    '            Next
-    '        Next
-    '    Next
-
-    'End Sub
-
+    End Sub
 
 
 End Class

@@ -23,6 +23,7 @@ Partial Class Form1
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.Lstbx = New System.Windows.Forms.ListBox()
+        Me.Btn_NewGame = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'Lstbx
@@ -33,12 +34,22 @@ Partial Class Form1
         Me.Lstbx.Size = New System.Drawing.Size(303, 485)
         Me.Lstbx.TabIndex = 0
         '
+        'Btn_NewGame
+        '
+        Me.Btn_NewGame.Location = New System.Drawing.Point(564, 49)
+        Me.Btn_NewGame.Name = "Btn_NewGame"
+        Me.Btn_NewGame.Size = New System.Drawing.Size(75, 23)
+        Me.Btn_NewGame.TabIndex = 1
+        Me.Btn_NewGame.Text = "New Game"
+        Me.Btn_NewGame.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer))
         Me.ClientSize = New System.Drawing.Size(1228, 637)
+        Me.Controls.Add(Me.Btn_NewGame)
         Me.Controls.Add(Me.Lstbx)
         Me.Name = "Form1"
         Me.Text = "Form1"
@@ -47,4 +58,5 @@ Partial Class Form1
     End Sub
 
     Friend WithEvents Lstbx As ListBox
+    Friend WithEvents Btn_NewGame As Button
 End Class
