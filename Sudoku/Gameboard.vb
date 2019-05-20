@@ -11,25 +11,27 @@ Public Class Gameboard
 
     Dim OriginX, OriginY As Integer
 
-    Public Shared CANDIDATE_SIZEpx As Integer = 14
-    Public Shared CANDIDATE_PADDINGpx As Integer = 1
+    Public Const CANDIDATE_SIZEpx As Integer = 14
+    Public Const CANDIDATE_PADDINGpx As Integer = 1
 
-    Public Shared TOTAL_CELL_SIZEpx As Integer = 3 * CANDIDATE_SIZEpx + 2 * CANDIDATE_PADDINGpx
-    Public Shared CELL_PADDINGpx As Integer = 12
+    Public Const TOTAL_CELL_SIZEpx As Integer = 3 * CANDIDATE_SIZEpx + 2 * CANDIDATE_PADDINGpx
+    Public Const CELL_PADDINGpx As Integer = 12
 
-    Public Shared TOTAL_BOX_SIZEpx = 3 * TOTAL_CELL_SIZEpx + 2 * CELL_PADDINGpx
-    Public Shared BOX_PADDINGpx As Integer = 20
+    Public Const TOTAL_BOX_SIZEpx = 3 * TOTAL_CELL_SIZEpx + 2 * CELL_PADDINGpx
+    Public Const BOX_PADDINGpx As Integer = 20
 
-    Public Shared GAME_SIZEpx = (3 * TOTAL_BOX_SIZEpx) + (2 * BOX_PADDINGpx)
-    Public Shared LINE_WIDTH As Integer = 5
+    Public Const GAME_SIZEpx = (3 * TOTAL_BOX_SIZEpx) + (2 * BOX_PADDINGpx)
+    Public Const LINE_WIDTH As Integer = 5
 
     Public Boxes(2, 2) As Box
+    Public Cell_Array(8, 8) As Cell
 
     Public Sub New(Ox As Integer, Oy As Integer)
         OriginX = Ox
         OriginY = Oy
         CreateGameBoard()
         'Form1.Size = New Size(OriginX + (GAME_SIZEpx + 40), OriginY + (GAME_SIZEpx + 60))
+        Cell_Array = Cell.Temp_Cell_Array
     End Sub
 
     Private Sub CreateGameBoard()
@@ -82,7 +84,7 @@ Public Class Box
     Dim Box_Point, Cell_Point As Point
 
     Public Cells(2, 2) As Cell
-    Dim OriginX, OriginY As Integer
+    Private OriginX, OriginY As Integer
 
     Public Sub New(Ox As Integer, Oy As Integer, _BoxLocation As Point)
         Box_Point = _BoxLocation
@@ -106,10 +108,11 @@ Public Class Cell
     Dim Cell_Point As Point
     Dim Row As Integer
     Dim Column As Integer
+    Public Shared Temp_Cell_Array(8, 8) As Cell
 
     'Properties that are used for drawing
     Dim OriginX, OriginY, count, defaultvalue As Integer
-    Shared Candidates(2, 2) As Label
+    Public Candidates(2, 2) As Label
     Public Valuelabel As New Label
     Dim Val_Candidates As New ArrayList
 
@@ -117,6 +120,7 @@ Public Class Cell
         'Define Origin as Origin X and Origin Y
         Parent_Box_Point = _Parent_Box_Location
         Cell_Point = CellLocation
+        Temp_Cell_Array(CellLocation.X, CellLocation.Y) = Me
         OriginX = Ox
         OriginY = Oy
         count = 1
@@ -205,5 +209,7 @@ Public Class Cell
     '    Next
 
     'End Sub
+
+
 
 End Class

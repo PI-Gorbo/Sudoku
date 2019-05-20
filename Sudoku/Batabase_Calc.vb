@@ -20,9 +20,3 @@ Public Class Database
 
 End Class
 
-Public Class TempCell
-
-    Dim Value As Integer
-    Dim Candidates As ArrayList
-
-End Class
