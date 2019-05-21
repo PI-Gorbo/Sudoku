@@ -1,4 +1,5 @@
 ﻿Imports Microsoft.VisualBasic
+Imports System.IO
 
 Public Class Gameboard
     Dim Cells(8, 8) As Cell
@@ -9,21 +10,13 @@ Public Class Gameboard
         Dim BoxX, BoxY As Integer
 
         'Iderate Through Cells.
-        For Cols = 0 To 8
-            For Rows = 0 To 8
+        For Rows = 0 To 8
+            For Cols = 0 To 8
                 'Create the new Cell Object
 
-                Cells(Cols, Rows) = New Cell
+                Cells(Rows, Cols) = New Cell
 
                 'Determine the box that each Cell belongs to. 
-                If Cols <= 2 Then
-                    BoxX = 0
-                ElseIf Cols >= 3 And Cols <= 5 Then
-                    BoxX = 1
-                ElseIf Cols >= 6 And Cols <= 8 Then
-                    BoxX = 2
-                End If
-
                 If Rows <= 2 Then
                     BoxY = 0
                 ElseIf Rows >= 3 And Rows <= 5 Then
@@ -32,45 +25,151 @@ Public Class Gameboard
                     BoxY = 2
                 End If
 
+                If Cols <= 2 Then
+                    BoxX = 0
+                ElseIf Cols >= 3 And Cols <= 5 Then
+                    BoxX = 1
+                ElseIf Cols >= 6 And Cols <= 8 Then
+                    BoxX = 2
+                End If
+
                 'Add the Cell to its parent box
-                Box(BoxX, BoxY).Add(Cells(Cols, Rows))
+                Box(BoxX, BoxY).Add(Cells(Rows, Cols))
                 'Add a refrence to the parent box for each cell
-                Cells(Cols, Rows).Parent_Box.X = BoxX
-                Cells(Cols, Rows).Parent_Box.Y = BoxY
+                Cells(Rows, Cols).Parent_Box.X = BoxX
+                Cells(Rows, Cols).Parent_Box.Y = BoxY
             Next
         Next
 
     End Sub
 
     Public Sub Import_New_Board()
+        'C:\Users\Samn\source\repos\Sudoku\Sudoku\bin\Debug\Easy1.Txt
+
+        Using reader As New StreamReader("C: \Users\Samn\source\repos\Sudoku\Sudoku\bin\Debug\Easy1.Txt") ' Temp File Location
+
+            Dim Line As String
+
+            For Rows = 0 To 8
+                'Read in a new line, which comes in row form
+                Line = reader.ReadLine
+                For Cols = 0 To 8
+                    If Line(Cols) = "0" Then
+                        'Fill the co-ordinated cell's candidates with all possible values
+                        For i = 1 To 9
+                            Cells(Rows, Cols).Candidates.Add(i)
+                        Next
+                    Else
+                        'Fill the candidates with one value. Therefore we know that the candidate has a value
+                        Cells(Rows, Cols).HasValue = True
+                        Cells(Rows, Cols).Value = Integer.Parse(Line(Cols))
+                    End If
+
+                Next
+            Next
+            reader.Close()
+        End Using
+
+        'Now that the board has been built, remove possible candidates from value boxes, rows and colums where HasValue = Ture
+
+        For Rows = 0 To 8
+            For Cols = 0 To 8
+                If Cells(Rows, Cols).HasValue Then
+                    'Function Removes candidates equal to the value of the cell in the cell's row, col and box
+                    RemovePossibleCandidates(Cells(Rows, Cols), Rows, Cols)
+                End If
+            Next
+        Next
 
     End Sub
 
+    Private Sub RemovePossibleCandidates(_Cell As Cell, row As Integer, col As Integer)
 
+        'Remove from each cell in the box. NB. Remove will try and remove the first instance of the value form the array. If there is none, it is fine with that too!
+        For Each c In Box(_Cell.Parent_Box.X, _Cell.Parent_Box.X)
+            DirectCast(c, Cell).Candidates.Remove(_Cell.Value)
+        Next
+
+        'Remove Candidate from the row
+
+        For Cols = 0 To 8
+            Cells(row, Cols).Candidates.Remove(_Cell.Value)
+        Next
+
+        'Remove Candidate form the column
+
+        For Rows = 0 To 8
+            Cells(Rows, col).Candidates.Remove(_Cell.Value)
+        Next
+
+    End Sub
+
+    '    End Sub
+
+    '    Private Shared Sub RemoveCandidateFromBox(Candidate As Integer, col As Integer, row As Integer)
+    '        Dim MaxRows, MinRows, MaxCols, MinCols As Integer
+    '        If col <= 2 Then
+    '            MinCols = 0
+    '            MaxCols = 2
+    '        ElseIf col >= 3 And col <= 5 Then
+    '            MinCols = 3
+    '            MaxCols = 5
+    '        ElseIf col >= 6 And col <= 8 Then
+    '            MinCols = 6
+    '            MaxCols = 8
+    '        End If
+
+    '        If row <= 2 Then
+    '            MinRows = 0
+    '            MaxRows = 2
+    '        ElseIf row >= 3 And col <= 5 Then
+    '            MinRows = 3
+    '            MaxRows = 5
+    '        ElseIf row >= 6 And col <= 8 Then
+    '            MinRows = 6
+    '            MaxRows = 8
+    '        End If
+
+    '        For cols = MinCols To MaxCols
+    '            For rows = MinRows To MaxRows
+    '                TempCells(cols, rows).Remove(Candidate)
+    '            Next
+    '        Next
+
+    '    End Sub
+
+    '    Private Shared Sub RemoveCandidateFromColRow(Candidate As Integer, col As Integer, row As Integer)
+
+    '        For cols = 0 To 8
+    '            TempCells(cols, row).Remove(Candidate)
+    '        Next
+
+    '        For rows = 0 To 8
+    '            TempCells(col, rows).Remove(Candidate)
+    '        Next
+
+    '    End Sub
 End Class
 
 Public Class Cell
+
+    'Calculation Properties and Methods Here
+
+    Public HasValue As Boolean
+    Public Value As Integer?
     Public Parent_Box As Point
-    Public Candidates(8) As ArrayList
+    Public Candidates As ArrayList
+
+    Public Sub New()
+        HasValue = False
+        Value = vbNull
+        Candidates.Capacity = 9
+    End Sub
+
+    '________________________'
+
+    'Display Properties and Methods Here
 End Class
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 'Public Class Gameboard
 '    '_________________________________________'
