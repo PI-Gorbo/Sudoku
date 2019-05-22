@@ -5,7 +5,19 @@ Public Class Gameboard
     Dim Cells(8, 8) As Cell
     Dim Box(2, 2) As ArrayList
 
-    Public Sub New()
+    Public Const CANDIDATE_SIZEpx As Integer = 14
+    Public Const CANDIDATE_PADDINGpx As Integer = 2
+
+    Public Const TOTAL_CELL_SIZEpx As Integer = 3 * CANDIDATE_SIZEpx + 2 * CANDIDATE_PADDINGpx
+    Public Const CELL_PADDINGpx As Integer = 12
+
+    Public Const TOTAL_BOX_SIZEpx = 3 * TOTAL_CELL_SIZEpx + 2 * CELL_PADDINGpx
+    Public Const BOX_PADDINGpx As Integer = 15
+
+    Public Const GAME_SIZEpx = (3 * TOTAL_BOX_SIZEpx) + (2 * BOX_PADDINGpx)
+    Public Const LINE_WIDTH As Integer = 5
+
+    Public Sub New(OriginX, OriginY)
 
         Dim BoxX, BoxY As Integer
 
@@ -34,12 +46,15 @@ Public Class Gameboard
                 End If
 
                 'Add the Cell to its parent box
+                Box(BoxX, BoxY) = New ArrayList
                 Box(BoxX, BoxY).Add(Cells(Rows, Cols))
                 'Add a refrence to the parent box for each cell
                 Cells(Rows, Cols).Parent_Box.X = BoxX
                 Cells(Rows, Cols).Parent_Box.Y = BoxY
             Next
         Next
+
+        New_Display(OriginX, OriginY)
 
     End Sub
 
@@ -104,51 +119,65 @@ Public Class Gameboard
 
     End Sub
 
-    '    End Sub
+    Public Sub New_Display(Ox As Integer, Oy As Integer)
 
-    '    Private Shared Sub RemoveCandidateFromBox(Candidate As Integer, col As Integer, row As Integer)
-    '        Dim MaxRows, MinRows, MaxCols, MinCols As Integer
-    '        If col <= 2 Then
-    '            MinCols = 0
-    '            MaxCols = 2
-    '        ElseIf col >= 3 And col <= 5 Then
-    '            MinCols = 3
-    '            MaxCols = 5
-    '        ElseIf col >= 6 And col <= 8 Then
-    '            MinCols = 6
-    '            MaxCols = 8
-    '        End If
+        Dim OriginX = Ox
+        Dim OriginY = Oy
 
-    '        If row <= 2 Then
-    '            MinRows = 0
-    '            MaxRows = 2
-    '        ElseIf row >= 3 And col <= 5 Then
-    '            MinRows = 3
-    '            MaxRows = 5
-    '        ElseIf row >= 6 And col <= 8 Then
-    '            MinRows = 6
-    '            MaxRows = 8
-    '        End If
 
-    '        For cols = MinCols To MaxCols
-    '            For rows = MinRows To MaxRows
-    '                TempCells(cols, rows).Remove(Candidate)
-    '            Next
-    '        Next
+        Dim count As Integer
 
-    '    End Sub
 
-    '    Private Shared Sub RemoveCandidateFromColRow(Candidate As Integer, col As Integer, row As Integer)
+        For rows = 0 To 8
+            For cols = 0 To 8
 
-    '        For cols = 0 To 8
-    '            TempCells(cols, row).Remove(Candidate)
-    '        Next
 
-    '        For rows = 0 To 8
-    '            TempCells(col, rows).Remove(Candidate)
-    '        Next
+                count = 0
 
-    '    End Sub
+                For Can_rows = 0 To 2
+                    For Can_cols = 0 To 2
+
+
+                        count += 1
+
+
+                        Cells(rows, cols).Candidate_Labels(Can_rows, Can_cols) = New Label
+                        With Cells(rows, cols).Candidate_Labels(Can_rows, Can_cols)
+                            .BackColor = Color.GhostWhite
+                            .Size = New Size(CANDIDATE_SIZEpx, CANDIDATE_SIZEpx)
+                            .Location = New Point(OriginX + (Cells(rows, cols).Parent_Box.X * BOX_PADDINGpx) + (cols * (TOTAL_CELL_SIZEpx + CELL_PADDINGpx)) + (Can_cols * (CANDIDATE_SIZEpx + CANDIDATE_PADDINGpx)), OriginY + (Cells(rows, cols).Parent_Box.Y * BOX_PADDINGpx) + (rows * (TOTAL_CELL_SIZEpx + CELL_PADDINGpx)) + (Can_rows * (CANDIDATE_PADDINGpx + CANDIDATE_SIZEpx)))
+                            .Text = count
+                        End With
+                        Form1.Controls.Add(Cells(rows, cols).Candidate_Labels(Can_rows, Can_cols))
+                    Next
+                Next
+            Next
+        Next
+
+        '        'Draw Candidates
+        '        For CountY = 0 To 2
+        '            For CountX = 0 To 2
+
+        '                Candidates(CountX, CountY) = New Label
+        '                defaultvalue = count
+        '                With Candidates(CountX, CountY)
+        '                    .BackColor = Color.GhostWhite
+        '                    .Size = New Size(Gameboard.CANDIDATE_SIZEpx, Gameboard.CANDIDATE_SIZEpx)
+        '                    .Location = New Drawing.Point(OriginX + (CountX * (Gameboard.CANDIDATE_SIZEpx + Gameboard.CANDIDATE_PADDINGpx)), OriginY + (CountY * (Gameboard.CANDIDATE_SIZEpx + Gameboard.CANDIDATE_PADDINGpx)))
+        '                    .Text = Convert.ToString(count)
+        '                    .TextAlign = ContentAlignment.MiddleCenter
+        '                End With
+
+        '                Form1.Controls.Add(Candidates(CountX, CountY))
+        '                'Adds an event to each label which calls Lbl_Click function
+        '                AddHandler Candidates(CountX, CountY).Click, AddressOf Me.Lbl_Click
+        '                count += 1
+        '            Next
+        '        Next
+
+
+    End Sub
+
 End Class
 
 Public Class Cell
@@ -158,7 +187,7 @@ Public Class Cell
     Public HasValue As Boolean
     Public Value As Integer?
     Public Parent_Box As Point
-    Public Candidates As ArrayList
+    Public Candidates As New ArrayList
 
     Public Sub New()
         HasValue = False
@@ -169,6 +198,7 @@ Public Class Cell
     '________________________'
 
     'Display Properties and Methods Here
+    Public Candidate_Labels(2, 2) As Label
 End Class
 
 'Public Class Gameboard
