@@ -123,24 +123,18 @@ Public Class Gameboard
 
         Dim OriginX = Ox
         Dim OriginY = Oy
-
-
         Dim count As Integer
-
 
         For rows = 0 To 8
             For cols = 0 To 8
-
-
                 count = 0
-
                 For Can_rows = 0 To 2
                     For Can_cols = 0 To 2
-
-
+                        'Set the default value for the candidate
                         count += 1
+                        Cells(rows, cols).DefaultValue = count
 
-
+                        'Create a new label
                         Cells(rows, cols).Candidate_Labels(Can_rows, Can_cols) = New Label
                         With Cells(rows, cols).Candidate_Labels(Can_rows, Can_cols)
                             .BackColor = Color.GhostWhite
@@ -148,35 +142,115 @@ Public Class Gameboard
                             .Location = New Point(OriginX + (Cells(rows, cols).Parent_Box.X * BOX_PADDINGpx) + (cols * (TOTAL_CELL_SIZEpx + CELL_PADDINGpx)) + (Can_cols * (CANDIDATE_SIZEpx + CANDIDATE_PADDINGpx)), OriginY + (Cells(rows, cols).Parent_Box.Y * BOX_PADDINGpx) + (rows * (TOTAL_CELL_SIZEpx + CELL_PADDINGpx)) + (Can_rows * (CANDIDATE_PADDINGpx + CANDIDATE_SIZEpx)))
                             .Text = count
                         End With
+                        'Add a event to each label
+                        AddHandler Cells(rows, cols).Candidate_Labels(Can_rows, Can_cols).Click, AddressOf Me.LblClick
+
+                        'Add the label to the display
                         Form1.Controls.Add(Cells(rows, cols).Candidate_Labels(Can_rows, Can_cols))
                     Next
                 Next
             Next
         Next
 
-        '        'Draw Candidates
-        '        For CountY = 0 To 2
-        '            For CountX = 0 To 2
+    End Sub
 
-        '                Candidates(CountX, CountY) = New Label
-        '                defaultvalue = count
-        '                With Candidates(CountX, CountY)
-        '                    .BackColor = Color.GhostWhite
-        '                    .Size = New Size(Gameboard.CANDIDATE_SIZEpx, Gameboard.CANDIDATE_SIZEpx)
-        '                    .Location = New Drawing.Point(OriginX + (CountX * (Gameboard.CANDIDATE_SIZEpx + Gameboard.CANDIDATE_PADDINGpx)), OriginY + (CountY * (Gameboard.CANDIDATE_SIZEpx + Gameboard.CANDIDATE_PADDINGpx)))
-        '                    .Text = Convert.ToString(count)
-        '                    .TextAlign = ContentAlignment.MiddleCenter
-        '                End With
+    'Input handlder for 
+    '_____________________________________________' //Important -- Could implement a "box"/Grouping system to locate the label faster
+    '// Could also use logic to work out what col/row the label is in. Therefore I can check less
+    Public Sub LblClick(Sender As Label, e As System.EventArgs)
+        If Form1.Rad_Add.Checked = True Then
 
-        '                Form1.Controls.Add(Candidates(CountX, CountY))
-        '                'Adds an event to each label which calls Lbl_Click function
-        '                AddHandler Candidates(CountX, CountY).Click, AddressOf Me.Lbl_Click
-        '                count += 1
-        '            Next
-        '        Next
+            'Do something
 
+        Else
+            Dim c As New Cell
+            c = Sender.Tag
+
+            Form1.Lstbx.Items.Add("Triggerd 1")
+            Form1.Lstbx.Items.Add(Sender.Tag.ToString())
+            For Each ele In c.Candidates
+                Form1.Lstbx.Items.Add(ele)
+            Next
+
+            c.Candidates.Remove(Integer.Parse(Sender.Text))
+
+
+            Sender.Text = ""
+
+        End If
+    End Sub
+    '__________________________________________________'
+
+    Public Sub DisplayValueLabel(C As Cell)
+        Form1.Lstbx.Items.Add("Triggering 2")
+        C.ValueLabel = New Label
+        With C.ValueLabel
+            .Size = New Size(TOTAL_CELL_SIZEpx, TOTAL_CELL_SIZEpx)
+            .Location = C.Candidate_Labels(0, 0).Location
+            .Text = C.Candidates(0)
+        End With
+        Form1.Container.Add(C.ValueLabel)
+        For rows = 0 To 2
+            For cols = 0 To 2
+                With C.Candidate_Labels(rows, cols)
+                    .Enabled = False
+                    .Visible = False
+                End With
+            Next
+        Next
 
     End Sub
+
+
+    'For rows = 0 To 8
+    '    For cols = 0 To 8
+    '        For Can_Rows = 0 To 2
+    '            For Can_Cols = 0 To 2
+
+    '                Form1.Lstbx.Items.Add(Cells(rows, cols).Candidate_Labels(Can_Rows, Can_Cols).Equals(Sender))
+
+    '                If Cells(rows, cols).Candidate_Labels(Can_Rows, Can_Cols).Equals(Sender) Then
+
+    '                    Cells(rows, cols).Candidates.Remove(Integer.Parse(Sender.Text))
+    '                    For Each ele In Cells(rows, cols).Candidates
+    '                        Form1.Lstbx.Items.Add(ele)
+
+    '                    Next
+    '                    If Cells(rows, cols).Candidates.Count = 1 Then
+    '                        DisplayValueLabel(Cells(rows, cols))
+    '                    End If
+    '                Else
+    '                    Exit For
+    '                End If
+    '            Next
+    '        Next
+    '    Next
+    'Next
+    'Private Sub Lbl_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
+    '        'Converts the sender object into a label "x"
+    '        Dim x As Label = DirectCast(sender, Label)
+    '        'Removes x from Valus and Removes its text from the gameboard
+    '        Val_Candidates.Remove(x.Text)
+    '        x.Text = ""
+    '        'If there is only 1 value in the array.
+    '        If Val_Candidates.Count = 1 Then
+    '            For Cols = 0 To 2
+    '                For Rows = 0 To 2
+    '                    Candidates(Cols, Rows).Visible = False
+    '                    Candidates(Cols, Rows).Enabled = False
+    '                Next
+    '            Next
+
+    '            With Valuelabel
+    '                .Visible = True
+    '                .BackColor = Color.White
+    '                .Enabled = True
+    '                .BringToFront()
+    '                'Set Value Label as the remaining Val_Candidates
+    '                .Text = Val_Candidates(0)
+    '            End With
+    '        End If
+    '    End Sub
 
 End Class
 
@@ -198,7 +272,10 @@ Public Class Cell
     '________________________'
 
     'Display Properties and Methods Here
+    Public Display_Candidates As New ArrayList
     Public Candidate_Labels(2, 2) As Label
+    Public ValueLabel As Label
+    Public DefaultValue As Integer
 End Class
 
 'Public Class Gameboard
