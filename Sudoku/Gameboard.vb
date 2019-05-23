@@ -2,6 +2,7 @@
 Imports System.IO
 
 Public Class Gameboard
+
     Dim Cells(8, 8) As Cell
     Dim Box(2, 2) As ArrayList
 
@@ -27,7 +28,11 @@ Public Class Gameboard
                 'Create the new Cell Object
 
                 Cells(Rows, Cols) = New Cell
-
+                '____________________'
+                'For i = 1 To 9
+                '    Cells(Rows, Cols).Candidates.Add(i)
+                'Next
+                '____________________'
                 'Determine the box that each Cell belongs to. 
                 If Rows <= 2 Then
                     BoxY = 0
@@ -69,6 +74,10 @@ Public Class Gameboard
                 'Read in a new line, which comes in row form
                 Line = reader.ReadLine
                 For Cols = 0 To 8
+                    'Cells(Rows, Cols).Candidates.Clear()
+                    'Cells(Rows, Cols).HasValue = False
+                    'Cells(Rows, Cols).HasValueFromImport = False
+
                     If Line(Cols) = "0" Then
                         'Fill the co-ordinated cell's candidates with all possible values
                         For i = 1 To 9
@@ -76,8 +85,10 @@ Public Class Gameboard
                         Next
                     Else
                         'Fill the candidates with one value. Therefore we know that the candidate has a value
+                        Cells(Rows, Cols).HasValueFromImport = True
                         Cells(Rows, Cols).HasValue = True
-                        Cells(Rows, Cols).Value = Integer.Parse(Line(Cols))
+                        Form1.Lstbx.Items.Add(Integer.Parse(Line(Cols)))
+                        Cells(Rows, Cols).Candidates.Add(Integer.Parse(Line(Cols)))
                     End If
 
                 Next
@@ -89,7 +100,7 @@ Public Class Gameboard
 
         For Rows = 0 To 8
             For Cols = 0 To 8
-                If Cells(Rows, Cols).HasValue Then
+                If Cells(Rows, Cols).HasValueFromImport Then
                     'Function Removes candidates equal to the value of the cell in the cell's row, col and box
                     RemovePossibleCandidates(Cells(Rows, Cols), Rows, Cols)
                 End If
@@ -102,19 +113,19 @@ Public Class Gameboard
 
         'Remove from each cell in the box. NB. Remove will try and remove the first instance of the value form the array. If there is none, it is fine with that too!
         For Each c In Box(_Cell.Parent_Box.X, _Cell.Parent_Box.X)
-            DirectCast(c, Cell).Candidates.Remove(_Cell.Value)
+            DirectCast(c, Cell).Candidates.Remove(_Cell.Candidates(0))
         Next
 
         'Remove Candidate from the row
 
         For Cols = 0 To 8
-            Cells(row, Cols).Candidates.Remove(_Cell.Value)
+            Cells(row, Cols).Candidates.Remove(_Cell.Candidates(0))
         Next
 
         'Remove Candidate form the column
 
         For Rows = 0 To 8
-            Cells(Rows, col).Candidates.Remove(_Cell.Value)
+            Cells(Rows, col).Candidates.Remove(_Cell.Candidates(0))
         Next
 
     End Sub
@@ -133,10 +144,10 @@ Public Class Gameboard
                         'Set the default value for the candidate
                         count += 1
                         Cells(rows, cols).DefaultValue = count
-
                         'Create a new label
                         Cells(rows, cols).Candidate_Labels(Can_rows, Can_cols) = New Label
                         With Cells(rows, cols).Candidate_Labels(Can_rows, Can_cols)
+                            .Tag = Cells(rows, cols)
                             .BackColor = Color.GhostWhite
                             .Size = New Size(CANDIDATE_SIZEpx, CANDIDATE_SIZEpx)
                             .Location = New Point(OriginX + (Cells(rows, cols).Parent_Box.X * BOX_PADDINGpx) + (cols * (TOTAL_CELL_SIZEpx + CELL_PADDINGpx)) + (Can_cols * (CANDIDATE_SIZEpx + CANDIDATE_PADDINGpx)), OriginY + (Cells(rows, cols).Parent_Box.Y * BOX_PADDINGpx) + (rows * (TOTAL_CELL_SIZEpx + CELL_PADDINGpx)) + (Can_rows * (CANDIDATE_PADDINGpx + CANDIDATE_SIZEpx)))
@@ -154,45 +165,88 @@ Public Class Gameboard
 
     End Sub
 
-    'Input handlder for 
-    '_____________________________________________' //Important -- Could implement a "box"/Grouping system to locate the label faster
-    '// Could also use logic to work out what col/row the label is in. Therefore I can check less
-    Public Sub LblClick(Sender As Label, e As System.EventArgs)
-        If Form1.Rad_Add.Checked = True Then
+    Public Sub Update_Display()
 
-            'Do something
-
-        Else
-            Dim c As New Cell
-            c = Sender.Tag
-
-            Form1.Lstbx.Items.Add("Triggerd 1")
-            Form1.Lstbx.Items.Add(Sender.Tag.ToString())
-            For Each ele In c.Candidates
-                Form1.Lstbx.Items.Add(ele)
+        For Rows = 0 To 8
+            For Cols = 0 To 8
+                If Cells(Rows, Cols).HasValueFromImport = True Then
+                    DisplayValueLabel(Cells(Rows, Cols))
+                Else
+                    MatchCandidatestoLabels(Cells(Rows, Cols))
+                End If
             Next
+        Next
 
-            c.Candidates.Remove(Integer.Parse(Sender.Text))
+    End Sub
 
+    Public Sub MatchCandidatestoLabels(ParentCell As Cell)
+        For rows = 0 To 2
+            For cols = 0 To 2
+                For Each ele In ParentCell.Candidates
+                    If ((cols * 3 + rows) + 1) = ele Then
+                        ParentCell.Candidate_Labels(rows, cols).Text = ele
+                    End If
+                Next
+            Next
+        Next
+    End Sub
 
-            Sender.Text = ""
+    'Input handlder
+    '_____________________________________________' 
+    '//Important -- Could implement a "box"/Grouping system to locate the label faster
+    '// Could also use logic to work out what col/row the label is in. Therefore I can check less
+    Public Sub LblClick(ByVal Sender As Label, e As System.EventArgs)
 
+        If Form1.Rad_Remove.Checked = True Then
+            RemoveCandidate(Sender, Sender.Tag)
+        Else
+            AddCandidate(Sender, Sender.Tag)
         End If
+
     End Sub
     '__________________________________________________'
 
-    Public Sub DisplayValueLabel(C As Cell)
-        Form1.Lstbx.Items.Add("Triggering 2")
-        C.ValueLabel = New Label
-        With C.ValueLabel
+    Public Sub RemoveCandidate(lab As Label, ParentCell As Cell)
+
+        'Remove Candidate from the data collection of candidates for that cell
+
+        'Remove the Candidate from the label
+
+        'IF candidates has a size of one, it can be assumed that the remaining value is the actual value of the label
+        'PROBS NEED TO ADD SOME LOGIC THAT DETERMINES IF THERE IS A VALUE CELL ALREADY OF THAT VALUE IN ROW, COL, BOX
+        'If the above is true, Display the Value label
+
+
+    End Sub
+
+    Public Sub AddCandidate(lab As Label, ParentCell As Cell)
+        'IF THE Value of the label is already in the Parent Cell's candidates. Do Nothing
+
+        'IF the cell clicked on has a value label. IT must be assumed that the user made a mistake and wants to add candidates. 
+        '//This means disabling the value label and adding the candidate
+
+        'Else Add the default value of the label back to the list of candidates and make the text of the label the default value
+    End Sub
+
+    Public Sub DisplayValueLabel(ParentCell As Cell)
+
+        ParentCell.ValueLabel = New Label
+        'Form1.Lstbx.Items.Add(Form1.GetType())
+
+        With ParentCell.ValueLabel
             .Size = New Size(TOTAL_CELL_SIZEpx, TOTAL_CELL_SIZEpx)
-            .Location = C.Candidate_Labels(0, 0).Location
-            .Text = C.Candidates(0)
+            .Location = ParentCell.Candidate_Labels(0, 0).Location
+            .Text = ParentCell.Candidates(0)
+            .Font = New Font("Symbol", 30, FontStyle.Bold)
+            .TextAlign = ContentAlignment.TopCenter
+            .BackColor = Color.White
         End With
-        Form1.Container.Add(C.ValueLabel)
+
+        Form1.Controls.Add(ParentCell.ValueLabel)
+
         For rows = 0 To 2
             For cols = 0 To 2
-                With C.Candidate_Labels(rows, cols)
+                With ParentCell.Candidate_Labels(rows, cols)
                     .Enabled = False
                     .Visible = False
                 End With
@@ -202,70 +256,20 @@ Public Class Gameboard
     End Sub
 
 
-    'For rows = 0 To 8
-    '    For cols = 0 To 8
-    '        For Can_Rows = 0 To 2
-    '            For Can_Cols = 0 To 2
-
-    '                Form1.Lstbx.Items.Add(Cells(rows, cols).Candidate_Labels(Can_Rows, Can_Cols).Equals(Sender))
-
-    '                If Cells(rows, cols).Candidate_Labels(Can_Rows, Can_Cols).Equals(Sender) Then
-
-    '                    Cells(rows, cols).Candidates.Remove(Integer.Parse(Sender.Text))
-    '                    For Each ele In Cells(rows, cols).Candidates
-    '                        Form1.Lstbx.Items.Add(ele)
-
-    '                    Next
-    '                    If Cells(rows, cols).Candidates.Count = 1 Then
-    '                        DisplayValueLabel(Cells(rows, cols))
-    '                    End If
-    '                Else
-    '                    Exit For
-    '                End If
-    '            Next
-    '        Next
-    '    Next
-    'Next
-    'Private Sub Lbl_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
-    '        'Converts the sender object into a label "x"
-    '        Dim x As Label = DirectCast(sender, Label)
-    '        'Removes x from Valus and Removes its text from the gameboard
-    '        Val_Candidates.Remove(x.Text)
-    '        x.Text = ""
-    '        'If there is only 1 value in the array.
-    '        If Val_Candidates.Count = 1 Then
-    '            For Cols = 0 To 2
-    '                For Rows = 0 To 2
-    '                    Candidates(Cols, Rows).Visible = False
-    '                    Candidates(Cols, Rows).Enabled = False
-    '                Next
-    '            Next
-
-    '            With Valuelabel
-    '                .Visible = True
-    '                .BackColor = Color.White
-    '                .Enabled = True
-    '                .BringToFront()
-    '                'Set Value Label as the remaining Val_Candidates
-    '                .Text = Val_Candidates(0)
-    '            End With
-    '        End If
-    '    End Sub
-
 End Class
 
 Public Class Cell
 
     'Calculation Properties and Methods Here
-
+    Public HasValueFromImport As Boolean
     Public HasValue As Boolean
-    Public Value As Integer?
     Public Parent_Box As Point
     Public Candidates As New ArrayList
 
     Public Sub New()
+        HasValueFromImport = False
         HasValue = False
-        Value = vbNull
+        Candidates.Clear()
         Candidates.Capacity = 9
     End Sub
 
@@ -274,7 +278,7 @@ Public Class Cell
     'Display Properties and Methods Here
     Public Display_Candidates As New ArrayList
     Public Candidate_Labels(2, 2) As Label
-    Public ValueLabel As Label
+    Public ValueLabel As New Label
     Public DefaultValue As Integer
 End Class
 
