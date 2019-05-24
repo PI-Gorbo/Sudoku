@@ -30,11 +30,7 @@ Public Class Gameboard
                 'Create the new Cell Object
 
                 Cells(Rows, Cols) = New Cell
-                '____________________'
-                'For i = 1 To 9
-                '    Cells(Rows, Cols).Candidates.Add(i)
-                'Next
-                '____________________'
+
                 'Determine the box that each Cell belongs to. 
                 If Rows <= 2 Then
                     BoxY = 0
