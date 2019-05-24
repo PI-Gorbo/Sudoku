@@ -1,6 +1,7 @@
 ﻿Imports Microsoft.VisualBasic
 Imports System.IO
 
+
 Public Class Gameboard
 
     Dim Cells(8, 8) As Cell
@@ -67,8 +68,7 @@ Public Class Gameboard
     'Imports a new board text file  from a file location. 
     Public Sub Import_New_Board()
         'C:\Users\Samn\source\repos\Sudoku\Sudoku\bin\Debug\Easy1.Txt
-
-        Using reader As New StreamReader("C: \Users\Samn\source\repos\Sudoku\Sudoku\bin\Debug\Easy1.Txt") ' Temp File Location
+        Using reader As New StreamReader("Easy1.Txt") ' Temp File Location
 
             Dim Line As String
 
@@ -193,6 +193,7 @@ Public Class Gameboard
     Public Sub MatchCandidatestoLabels(ParentCell As Cell)
         For rows = 0 To 2
             For cols = 0 To 2
+                ParentCell.Candidate_Labels(rows, cols).Text = ""
                 For Each ele In ParentCell.Candidates
                     If ((rows * 3 + cols) + 1) = ele Then
                         ParentCell.Candidate_Labels(rows, cols).Text = ele
@@ -220,12 +221,18 @@ Public Class Gameboard
     Public Sub RemoveCandidate(lab As Label, ParentCell As Cell)
 
         'Remove Candidate from the data collection of candidates for that cell
-
+        If ParentCell.Candidates.Count <> 1 Then
+            ParentCell.Candidates.Remove(Integer.Parse(lab.Text))
+        End If
         'Remove the Candidate from the label
-
+        lab.Text = ""
         'IF candidates has a size of one, it can be assumed that the remaining value is the actual value of the label
         'PROBS NEED TO ADD SOME LOGIC THAT DETERMINES IF THERE IS A VALUE CELL ALREADY OF THAT VALUE IN ROW, COL, BOX
         'If the above is true, Display the Value label
+
+        If ParentCell.Candidates.Count = 1 Then
+            DisplayValueLabel(ParentCell)
+        End If
 
 
     End Sub
