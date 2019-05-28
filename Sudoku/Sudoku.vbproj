@@ -97,6 +97,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="ProcessingGameboard.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form1.resx">
@@ -123,7 +124,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\Debug\Easy1.Txt" />
+    <Content Include="bin\Debug\Boards\Easy1.txt" />
+    <Content Include="bin\Debug\Boards\Easy2.txt" />
+    <Content Include="bin\Debug\Boards\Easy3.txt" />
     <Content Include="bin\Debug\Sudoku.exe" />
     <Content Include="bin\Debug\Sudoku.pdb" />
     <Content Include="bin\Debug\Sudoku.xml" />

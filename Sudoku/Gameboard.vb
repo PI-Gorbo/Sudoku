@@ -3,7 +3,7 @@ Imports System.IO
 
 
 Public Class Gameboard
-
+    Dim FileList As New ArrayList
     Dim Keypad As New ArrayList
     Dim Cells(8, 8) As Cell
     Dim Box(2, 2) As ArrayList
@@ -42,26 +42,16 @@ Public Class Gameboard
                 'Create the new Cell Object
 
                 Cells(Rows, Cols) = New Cell
-
+                Cells(Rows, Cols).CellLocation.X = Cols
+                Cells(Rows, Cols).CellLocation.Y = Rows
                 'Determine the box that each Cell belongs to. 
-                If Rows <= 2 Then
-                    BoxY = 0
-                ElseIf Rows >= 3 And Rows <= 5 Then
-                    BoxY = 1
-                ElseIf Rows >= 6 And Rows <= 8 Then
-                    BoxY = 2
-                End If
-
-                If Cols <= 2 Then
-                    BoxX = 0
-                ElseIf Cols >= 3 And Cols <= 5 Then
-                    BoxX = 1
-                ElseIf Cols >= 6 And Cols <= 8 Then
-                    BoxX = 2
-                End If
+                BoxY = Math.Floor(Rows / 3)
+                BoxX = Math.Floor(Cols / 3)
 
                 'Add the Cell to its parent box
-                Box(BoxX, BoxY) = New ArrayList
+                If IsNothing(Box(BoxX, BoxY)) Then
+                    Box(BoxX, BoxY) = New ArrayList
+                End If
                 Box(BoxX, BoxY).Add(Cells(Rows, Cols))
                 'Add a refrence to the parent box for each cell
                 Cells(Rows, Cols).Parent_Box.X = BoxX
@@ -69,80 +59,14 @@ Public Class Gameboard
             Next
         Next
 
+        'Add all files to the list of files
+        Dim Dr As New DirectoryInfo("Boards")
+        For Each file In Dr.GetFiles()
+            FileList.Add(file)
+        Next
+
 
         New_Display(OriginX, OriginY)
-
-    End Sub
-
-    'Imports a new board text file  from a file location. 
-    Public Sub Import_New_Board()
-        'C:\Users\Samn\source\repos\Sudoku\Sudoku\bin\Debug\Easy1.Txt
-        Using reader As New StreamReader("Easy1.Txt") ' Temp File Location
-
-            Dim Line As String
-
-            For Rows = 0 To 8
-                'Read in a new line, which comes in row form
-                Line = reader.ReadLine
-                For Cols = 0 To 8
-                    'Clears the values of the board ready for a new set of values
-                    Cells(Rows, Cols).Candidates.Clear()
-                    Cells(Rows, Cols).HasValue = False
-                    Cells(Rows, Cols).HasValueFromImport = False
-
-                    If Line(Cols) = "0" Then
-                        'Fill the co-ordinated cell's candidates with all possible values
-                        For i = 1 To 9
-                            Cells(Rows, Cols).Candidates.Add(i)
-                        Next
-                    Else
-                        'Fill the candidates with one value. Therefore we know that the candidate has a value
-                        Cells(Rows, Cols).HasValueFromImport = True
-                        Cells(Rows, Cols).HasValue = True
-                        Cells(Rows, Cols).Candidates.Add(Integer.Parse(Line(Cols)))
-                    End If
-
-                Next
-            Next
-            reader.Close()
-        End Using
-
-        'Now that the board has been built, remove possible candidates from value boxes, rows and colums where HasValue = Ture
-
-        For Rows = 0 To 8
-            For Cols = 0 To 8
-                If Cells(Rows, Cols).HasValueFromImport Then
-                    'Function Removes candidates equal to the value of the cell in the cell's row, col and box
-                    RemovePossibleCandidates(Cells(Rows, Cols), Rows, Cols)
-                End If
-            Next
-        Next
-
-    End Sub
-
-    'Removes possible candidates based on the current value lables
-    Private Sub RemovePossibleCandidates(_Cell As Cell, row As Integer, col As Integer)
-
-        'Remove from each cell in the box. NB. Remove will try and remove the first instance of the value form the array. If there is none, it is fine with that too!
-        For Each c In Box(_Cell.Parent_Box.X, _Cell.Parent_Box.X)
-            c.Candidates.Remove(_Cell.Candidates(0))
-        Next
-
-        'Remove Candidate from the row
-
-        For Cols = 0 To 8
-            If Cells(row, Cols).HasValue = False Then
-                Cells(row, Cols).Candidates.Remove(_Cell.Candidates(0))
-            End If
-        Next
-
-        'Remove Candidate form the column
-
-        For Rows = 0 To 8
-            If Cells(Rows, col).HasValue = False Then
-                Cells(Rows, col).Candidates.Remove(_Cell.Candidates(0))
-            End If
-        Next
 
     End Sub
 
@@ -198,35 +122,6 @@ Public Class Gameboard
 
     End Sub
 
-    'Displays the current board. As is.
-    Public Sub Update_Display()
-
-        For Rows = 0 To 8
-            For Cols = 0 To 8
-                If Cells(Rows, Cols).HasValueFromImport = True Then
-                    DisplayValueLabel(Cells(Rows, Cols), Cells(Rows, Cols).Candidates(0))
-                Else
-                    MatchCandidatestoLabels(Cells(Rows, Cols))
-                End If
-            Next
-        Next
-
-    End Sub
-
-    'Mactches what the candidates are to what the labels display
-    Public Sub MatchCandidatestoLabels(ParentCell As Cell)
-        For rows = 0 To 2
-            For cols = 0 To 2
-                ParentCell.Candidate_Labels(rows, cols).Text = ""
-                For Each ele In ParentCell.Candidates
-                    If ((rows * 3 + cols) + 1) = ele Then
-                        ParentCell.Candidate_Labels(rows, cols).Text = ele
-                    End If
-                Next
-            Next
-        Next
-    End Sub
-
     'Input handlder for labels
     '_____________________________________________' 
     Public Sub LblClick(ByVal Sender As Label, e As System.EventArgs)
@@ -234,7 +129,7 @@ Public Class Gameboard
         SetLastClicked(Sender.Tag)
 
     End Sub
-    '__________________________________________________'
+
     'Updates Lasted Clicked display and variable
     Private Sub SetLastClicked(ParentCell As Cell)
 
@@ -303,7 +198,7 @@ Public Class Gameboard
                 'IF the cell has a value, reflect that in the buttons. Therefore, the button should light up DarkSalmon.
                 For Each ele As Button In Keypad
                     ele.BackColor = Color.White
-                    If Integer.Parse(LastClicked.ValueLabel.Text) = ele.Tag Then
+                    If LastClicked.Value = ele.Tag Then
                         ele.BackColor = Color.DarkSalmon
                     End If
                 Next
@@ -334,26 +229,30 @@ Public Class Gameboard
         End If
     End Sub
 
-    'Displays a Value Label
-    Public Sub DisplayValueLabel(ParentCell As Cell, value As Integer)
+    'Displays and disables Value Label
+    Public Sub DisplayValueLabel(ParentCell As Cell, _value As Integer)
 
         ParentCell.Selectlabel.Visible = False
         ParentCell.ValueLabel = New Label
-            ParentCell.HasValue = True
-            With ParentCell.ValueLabel
-                .Size = New Size(TOTAL_CELL_SIZEpx, TOTAL_CELL_SIZEpx)
-                .Location = ParentCell.Candidate_Labels(0, 0).Location
-                .Text = Convert.ToString(value)
-                .Font = New Font("Symbol", 30, FontStyle.Bold)
-                .TextAlign = ContentAlignment.TopCenter
-                .BackColor = Color.White
-                .BringToFront()
-                .Visible = True
-                .Enabled = True
-                .Tag = ParentCell
-            End With
+        ParentCell.HasValue = True
+        ParentCell.Value = _value
+        With ParentCell.ValueLabel
+            .Size = New Size(TOTAL_CELL_SIZEpx, TOTAL_CELL_SIZEpx)
+            .Location = ParentCell.Candidate_Labels(0, 0).Location
+            .Text = Convert.ToString(ParentCell.Value)
+            .Font = New Font("Symbol", 30, FontStyle.Bold)
+            If ParentCell.HasValueFromImport Then
+                .ForeColor = Color.Blue
+            End If
+            .TextAlign = ContentAlignment.TopCenter
+            .BackColor = Color.White
+            .BringToFront()
+            .Visible = True
+            .Enabled = True
+            .Tag = ParentCell
+        End With
 
-            AddHandler ParentCell.ValueLabel.Click, AddressOf Me.LblClick
+        AddHandler ParentCell.ValueLabel.Click, AddressOf Me.LblClick
 
         Form1.Controls.Add(ParentCell.ValueLabel)
 
@@ -375,6 +274,7 @@ Public Class Gameboard
         End If
 
         ParentCell.HasValue = False
+        ParentCell.Value = vbNull
         ParentCell.ValueLabel.Dispose()
         ParentCell.Selectlabel.Visible = True
 
@@ -397,12 +297,15 @@ Public Class Cell
     'Calculation Properties and Methods Here
     Public HasValueFromImport As Boolean
     Public HasValue As Boolean
+    Public Value As Integer?
     Public Parent_Box As Point
     Public Candidates As New ArrayList
+    Public CellLocation As Point
 
     Public Sub New()
         HasValueFromImport = False
         HasValue = False
+        Value = vbnull
         Candidates.Clear()
         Candidates.Capacity = 9
     End Sub
@@ -410,7 +313,7 @@ Public Class Cell
     '________________________'
 
     'Display Properties and Methods Here
-    Public Display_Candidates As New ArrayList
+    'Public Display_Candidates As New ArrayList
     Public Candidate_Labels(2, 2) As Label
     Public Selectlabel As New Label
     Public ValueLabel As Label

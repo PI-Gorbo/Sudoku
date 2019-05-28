@@ -28,5 +28,9 @@ Public Class Form1
     Private Sub Rad_Pen_CheckedChanged(sender As Object, e As EventArgs) Handles Rad_Pen.CheckedChanged
         Game.UpdateButtons()
     End Sub
+
+    Private Sub Lstbx_SelectedIndexChanged(sender As Object, e As EventArgs) Handles Lstbx.SelectedIndexChanged
+
+    End Sub
 End Class
 
