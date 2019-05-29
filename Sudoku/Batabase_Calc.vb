@@ -2,37 +2,50 @@
 
 Public Class ObjBoard
 
-    Dim BoardCells(8, 8) As ObjCell
+    Public BoardCells(8, 8) As ObjCell
     Dim Box(2, 2) As ArrayList
 
     'New: Gets board. Gives Newly Created Cells a get Value. Adds Cells to their box and gives then a location relative to the board. 
-    Public Sub New()
+    Public Sub NewBoard()
         Dim r As New Random
         Dim f = Convert.ToString(Form1.Filelist(r.Next(0, Form1.Filelist.Count)).Fullname)
         Using reader As New StreamReader(f)
             Dim line As String
 
             For Rows = 0 To 8
-
                 line = reader.ReadLine
-
                 For Cols = 0 To 8
-
-                    BoardCells(Rows, Cols) = New ObjCell
-
-                    If line(Cols) = "0" Then
-                        For i = 1 To 9
-                            BoardCells(Rows, Cols).DataCandidates.Add(i)
-                        Next
+                    If IsNothing(BoardCells(Rows, Cols)) = True Then
+                        BoardCells(Rows, Cols) = New ObjCell
                     End If
 
+                    With BoardCells(Rows, Cols)
 
+                        If line(Cols) = "0" Then
+                            For i = 1 To 9
+                                .DataCandidates.Add(i)
+                            Next
+                        Else
+                            .Value = Integer.Parse(line(Cols))
+                            .HasValueFromImport = True
+                        End If
 
+                        .CellLocation = New Point(Rows, Cols)
+                        .ParentBox = New Point(Math.Floor(Rows / 3), Math.Floor(Cols / 3))
+
+                    End With
                 Next
             Next
         End Using
     End Sub
 
+    Public Sub ForceSolve()
+        'Preform a force solve
+    End Sub
+
+    Public Sub RemoveCandidates()
+        'Removes candidates.
+    End Sub
 
 
 End Class
@@ -42,20 +55,15 @@ Public Class ObjCell
     Public HasValueFromImport As Boolean
 
     Public DataCandidates As New ArrayList
-    Public DisplayCandidates As New ArrayList
     Public ParentBox As Point
     Public CellLocation As Point
 
-    'Public Labels(2, 2) As Label
-    'Public Valuelabel As Label
 
     Public Sub New()
         HasValueFromImport = False
         Value = vbNull
         DataCandidates.Clear()
         DataCandidates.Capacity = 9
-        DisplayCandidates.Clear()
-        DisplayCandidates.Capacity = 9
         ParentBox = New Point(-1, -1)
         CellLocation = New Point(-1, -1)
     End Sub

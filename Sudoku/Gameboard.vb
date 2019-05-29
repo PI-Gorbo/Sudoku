@@ -91,13 +91,7 @@
 '                        Cells(rows, cols).Candidate_Labels(Can_rows, Can_cols) = New Label
 
 '                        With Cells(rows, cols).Candidate_Labels(Can_rows, Can_cols)
-'                            .Tag = Cells(rows, cols)
-'                            .BackColor = Color.GhostWhite
-'                            .Size = New Size(CANDIDATE_SIZEpx, CANDIDATE_SIZEpx)
-'                            .Location = New Point(OriginX + (Cells(rows, cols).Parent_Box.X * BOX_PADDINGpx) + (cols * (TOTAL_CELL_SIZEpx + CELL_PADDINGpx)) + (Can_cols * (CANDIDATE_SIZEpx + CANDIDATE_PADDINGpx)), OriginY + (Cells(rows, cols).Parent_Box.Y * BOX_PADDINGpx) + (rows * (TOTAL_CELL_SIZEpx + CELL_PADDINGpx)) + (Can_rows * (CANDIDATE_PADDINGpx + CANDIDATE_SIZEpx)))
-'                            .Font = New Font("Symbol", CANDIDATE_SIZEpx * 0.65, FontStyle.Regular)
-'                            .TextAlign = ContentAlignment.TopCenter
-'                            .Text = count
+'                            
 '                        End With
 '                        'Add a event to each label
 '                        AddHandler Cells(rows, cols).Candidate_Labels(Can_rows, Can_cols).Click, AddressOf Me.LblClick

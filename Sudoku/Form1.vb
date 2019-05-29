@@ -7,6 +7,7 @@ Public Class Form1
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Dim Dr As New DirectoryInfo("Boards")
+        Dim x As New Gameboard
         For Each file In Dr.GetFiles()
             Filelist.Add(file)
         Next
