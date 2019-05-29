@@ -36,6 +36,8 @@ Partial Class Form1
         Me.Keypad_9 = New System.Windows.Forms.Button()
         Me.Keypad_8 = New System.Windows.Forms.Button()
         Me.Keypad_7 = New System.Windows.Forms.Button()
+        Me.Button1 = New System.Windows.Forms.Button()
+        Me.Btn_Clear = New System.Windows.Forms.Button()
         Me.Gp_Editing.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -205,12 +207,32 @@ Partial Class Form1
         Me.Keypad_7.Text = "7"
         Me.Keypad_7.UseVisualStyleBackColor = True
         '
+        'Button1
+        '
+        Me.Button1.Location = New System.Drawing.Point(749, 406)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(168, 57)
+        Me.Button1.TabIndex = 12
+        Me.Button1.Text = "Show Calculated Candiates"
+        Me.Button1.UseVisualStyleBackColor = True
+        '
+        'Btn_Clear
+        '
+        Me.Btn_Clear.Location = New System.Drawing.Point(749, 480)
+        Me.Btn_Clear.Name = "Btn_Clear"
+        Me.Btn_Clear.Size = New System.Drawing.Size(168, 57)
+        Me.Btn_Clear.TabIndex = 13
+        Me.Btn_Clear.Text = "Clear candidates"
+        Me.Btn_Clear.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer))
         Me.ClientSize = New System.Drawing.Size(1637, 784)
+        Me.Controls.Add(Me.Btn_Clear)
+        Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.Keypad_9)
         Me.Controls.Add(Me.Keypad_8)
         Me.Controls.Add(Me.Keypad_7)
@@ -247,4 +269,6 @@ Partial Class Form1
     Friend WithEvents Keypad_9 As Button
     Friend WithEvents Keypad_8 As Button
     Friend WithEvents Keypad_7 As Button
+    Friend WithEvents Button1 As Button
+    Friend WithEvents Btn_Clear As Button
 End Class
