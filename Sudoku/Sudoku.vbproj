@@ -127,7 +127,11 @@
     <Content Include="bin\Debug\Boards\Easy1.txt" />
     <Content Include="bin\Debug\Boards\Easy2.txt" />
     <Content Include="bin\Debug\Boards\Easy3.txt" />
-    <Content Include="bin\Debug\Boards\TextFile1.txt" />
+    <Content Include="bin\Debug\Boards\Easy4.txt" />
+    <Content Include="bin\Debug\Boards\Easy5.txt" />
+    <Content Include="bin\Debug\Evil\Evil1.txt" />
+    <Content Include="bin\Debug\Hard\Hard1.txt" />
+    <Content Include="bin\Debug\Medium\Med1.txt" />
     <Content Include="bin\Debug\Sudoku.exe" />
     <Content Include="bin\Debug\Sudoku.pdb" />
     <Content Include="bin\Debug\Sudoku.xml" />

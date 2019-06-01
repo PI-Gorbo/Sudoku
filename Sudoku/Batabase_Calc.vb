@@ -22,9 +22,20 @@ Public Class ObjBoard
             For Rows = 0 To 8
                 line = reader.ReadLine
                 For Cols = 0 To 8
+
                     If IsNothing(BoardCells(Rows, Cols)) = True Then
                         BoardCells(Rows, Cols) = New ObjCell
+                    Else
+                        With BoardCells(Rows, Cols)
+                            .HasValueFromImport = False
+                            .Value = vbNull
+                            .DataCandidates.Clear()
+                            .DataCandidates.Capacity = 9
+                            .ParentBox = New Point(-1, -1)
+                            .CellLocation = New Point(-1, -1)
+                        End With
                     End If
+
 
                     With BoardCells(Rows, Cols)
 
