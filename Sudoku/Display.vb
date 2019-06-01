@@ -20,8 +20,13 @@
         CreateLabels()
         Board = New ObjBoard
         Board.NewBoard()
-
+        PrimeBoard()
         'Create 9x9 display cells object and add the datacell property to it. 
+    End Sub
+
+    Public Sub NewGame()
+        Board.NewBoard()
+        PrimeBoard()
     End Sub
 
     'Takes the current board object and creates labels with the values on the board
@@ -31,7 +36,9 @@
             For Cols = 0 To 8
                 For LblRows = 0 To 2
                     For LblCols = 0 To 2
-
+                        If IsNothing(Cells(Rows, Cols)) Then
+                            Cells(Rows, Cols) = New Display_Cells
+                        End If
                         Cells(Rows, Cols).Labels(LblRows, LblCols) = New Label
                         With Cells(Rows, Cols).Labels(LblRows, LblCols)
                             .Tag = Cells(Rows, Cols)
@@ -41,18 +48,22 @@
                             .Font = New Font("Symbol", CANDIDATE_SIZEpx * 0.65, FontStyle.Regular)
                             .TextAlign = ContentAlignment.TopCenter
                         End With
-                        Form1.Container.Add(Cells(Rows, Cols).Labels(LblRows, LblCols))
+                        Form1.Controls.Add(Cells(Rows, Cols).Labels(LblRows, LblCols))
 
                     Next
                 Next
+
                 Cells(Rows, Cols).ValueLabel = New Label
                 With Cells(Rows, Cols).ValueLabel
-                    .Location = Cells(Rows, Cols).Labels(0, 0).Location
+                    .Location = New Point(Cells(Rows, Cols).Labels(0, 0).Location.X, Cells(Rows, Cols).Labels(0, 0).Location.Y)
                     .Size = New Size(TOTAL_CELL_SIZEpx, TOTAL_CELL_SIZEpx)
                     .BackColor = Color.White
+                    .Font = New Font("Symbol", 22, FontStyle.Bold)
+                    .TextAlign = ContentAlignment.MiddleCenter
                     .Enabled = False
                     .Visible = False
                 End With
+                Form1.Controls.Add(Cells(Rows, Cols).ValueLabel)
 
                 Cells(Rows, Cols).SelectedLabel = New Label
                 With Cells(Rows, Cols).SelectedLabel
@@ -62,6 +73,8 @@
                     .Enabled = False
                     .Visible = False
                 End With
+                Form1.Controls.Add(Cells(Rows, Cols).SelectedLabel)
+
 
             Next
         Next
@@ -76,11 +89,57 @@
         For Rows = 0 To 8
             For Cols = 0 To 8
                 Cells(Rows, Cols).DataCell = Board.BoardCells(Rows, Cols)
-                If Cells(Rows, Cols).DataCell.Value <> vbNull Then
-                    Cells(Rows, Cols).DataCell
+                Clear(Cells(Rows, Cols))
+                If Cells(Rows, Cols).DataCell.HasValueFromImport = True Then
+                    'Display Value Label
+                    DisplayValueLabel(Cells(Rows, Cols))
                 End If
             Next
         Next
+
+    End Sub
+
+    Public Sub DisplayValueLabel(ParentCell As Display_Cells)
+        Dim value As Integer = ParentCell.DataCell.Value
+        ParentCell.SelectedLabel.Visible = False
+
+        With ParentCell.ValueLabel
+            .Visible = True
+            .Enabled = True
+            .Text = value
+        End With
+
+        For rows = 0 To 2
+            For cols = 0 To 2
+                With ParentCell.Labels(rows, cols)
+                    .Enabled = False
+                    .Visible = False
+                End With
+            Next
+        Next
+    End Sub
+
+    Public Sub Clear(ParentCell As Display_Cells)
+
+    End Sub
+
+    Public Sub UpdateLabels()
+
+    End Sub
+
+    Public Sub PrimeForManualEntry()
+
+    End Sub
+
+    Public Sub InputLbl()
+
+    End Sub
+
+    Public Sub InputKeypad()
+
+    End Sub
+
+    Public Sub UpdateKeypads()
 
     End Sub
 

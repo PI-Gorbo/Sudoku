@@ -2,13 +2,20 @@
 
 Public Class ObjBoard
 
+    Public Filelist As New ArrayList
     Public BoardCells(8, 8) As ObjCell
     Dim Box(2, 2) As ArrayList
 
     'New: Gets board. Gives Newly Created Cells a get Value. Adds Cells to their box and gives then a location relative to the board. 
     Public Sub NewBoard()
+
+        Dim Dr As New DirectoryInfo("Boards")
+        For Each file In Dr.GetFiles()
+            Filelist.Add(file)
+        Next
+
         Dim r As New Random
-        Dim f = Convert.ToString(Form1.Filelist(r.Next(0, Form1.Filelist.Count)).Fullname)
+        Dim f = Convert.ToString(Filelist(r.Next(0, Filelist.Count)).Fullname)
         Using reader As New StreamReader(f)
             Dim line As String
 
@@ -37,6 +44,10 @@ Public Class ObjBoard
                 Next
             Next
         End Using
+    End Sub
+
+    Public Sub InputManualBoard()
+
     End Sub
 
     Public Sub ForceSolve()

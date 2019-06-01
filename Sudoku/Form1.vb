@@ -1,17 +1,14 @@
 ﻿Imports System.IO
 
 Public Class Form1
-
-    Public Filelist As New ArrayList
+    Dim x As Gameboard
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        x = New Gameboard
+    End Sub
 
-        Dim Dr As New DirectoryInfo("Boards")
-        Dim x As New Gameboard
-        For Each file In Dr.GetFiles()
-            Filelist.Add(file)
-        Next
-
+    Private Sub Btn_NewGame_Click(sender As Object, e As EventArgs) Handles Btn_NewGame.Click
+        x.NewGame()
     End Sub
 End Class
 
