@@ -27,7 +27,6 @@ Partial Class Form1
         Me.Gp_Editing = New System.Windows.Forms.GroupBox()
         Me.Rad_Pen = New System.Windows.Forms.RadioButton()
         Me.Rad_Pencil = New System.Windows.Forms.RadioButton()
-        Me.Keypad_1 = New System.Windows.Forms.Button()
         Me.Keypad_2 = New System.Windows.Forms.Button()
         Me.Keypad_3 = New System.Windows.Forms.Button()
         Me.Keypad_6 = New System.Windows.Forms.Button()
@@ -38,6 +37,7 @@ Partial Class Form1
         Me.Keypad_7 = New System.Windows.Forms.Button()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.Btn_Clear = New System.Windows.Forms.Button()
+        Me.Keypad_1 = New System.Windows.Forms.Button()
         Me.Gp_Editing.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -98,18 +98,6 @@ Partial Class Form1
         Me.Rad_Pencil.TabStop = True
         Me.Rad_Pencil.Text = "Pencil"
         Me.Rad_Pencil.UseVisualStyleBackColor = True
-        '
-        'Keypad_1
-        '
-        Me.Keypad_1.Font = New System.Drawing.Font("Symbol", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-        Me.Keypad_1.Location = New System.Drawing.Point(749, 265)
-        Me.Keypad_1.Margin = New System.Windows.Forms.Padding(4)
-        Me.Keypad_1.Name = "Keypad_1"
-        Me.Keypad_1.Size = New System.Drawing.Size(51, 36)
-        Me.Keypad_1.TabIndex = 3
-        Me.Keypad_1.Tag = "1"
-        Me.Keypad_1.Text = "1"
-        Me.Keypad_1.UseVisualStyleBackColor = True
         '
         'Keypad_2
         '
@@ -225,12 +213,25 @@ Partial Class Form1
         Me.Btn_Clear.Text = "Clear candidates"
         Me.Btn_Clear.UseVisualStyleBackColor = True
         '
+        'Keypad_1
+        '
+        Me.Keypad_1.Font = New System.Drawing.Font("Symbol", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+        Me.Keypad_1.Location = New System.Drawing.Point(749, 264)
+        Me.Keypad_1.Margin = New System.Windows.Forms.Padding(4)
+        Me.Keypad_1.Name = "Keypad_1"
+        Me.Keypad_1.Size = New System.Drawing.Size(51, 36)
+        Me.Keypad_1.TabIndex = 14
+        Me.Keypad_1.Tag = "1"
+        Me.Keypad_1.Text = "1"
+        Me.Keypad_1.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer))
         Me.ClientSize = New System.Drawing.Size(1637, 784)
+        Me.Controls.Add(Me.Keypad_1)
         Me.Controls.Add(Me.Btn_Clear)
         Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.Keypad_9)
@@ -241,7 +242,6 @@ Partial Class Form1
         Me.Controls.Add(Me.Keypad_4)
         Me.Controls.Add(Me.Keypad_3)
         Me.Controls.Add(Me.Keypad_2)
-        Me.Controls.Add(Me.Keypad_1)
         Me.Controls.Add(Me.Gp_Editing)
         Me.Controls.Add(Me.Btn_NewGame)
         Me.Controls.Add(Me.Lstbx)
@@ -260,7 +260,6 @@ Partial Class Form1
     Friend WithEvents Gp_Editing As GroupBox
     Friend WithEvents Rad_Pen As RadioButton
     Friend WithEvents Rad_Pencil As RadioButton
-    Friend WithEvents Keypad_1 As Button
     Friend WithEvents Keypad_2 As Button
     Friend WithEvents Keypad_3 As Button
     Friend WithEvents Keypad_6 As Button
@@ -271,4 +270,5 @@ Partial Class Form1
     Friend WithEvents Keypad_7 As Button
     Friend WithEvents Button1 As Button
     Friend WithEvents Btn_Clear As Button
+    Friend WithEvents Keypad_1 As Button
 End Class
