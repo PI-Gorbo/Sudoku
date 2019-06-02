@@ -41,6 +41,9 @@ Public Class Form1
         Game.UpdateKeypads()
     End Sub
 
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        Game.temp()
+    End Sub
 End Class
 
 'Dim Game As Gameboard

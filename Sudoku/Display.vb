@@ -103,12 +103,17 @@
 
         For Rows = 0 To 8
             For Cols = 0 To 8
-                Cells(Rows, Cols).DataCell = Board.BoardCells(Rows, Cols)
+
+                Cells(Rows, Cols).DataCell = Board.BaseBoardCells(Rows, Cols)
                 ClearValues(Cells(Rows, Cols))
                 ClearCandidates(Cells(Rows, Cols))
+                Cells(Rows, Cols).ValueLabel.BackColor = Color.White
+
                 If Cells(Rows, Cols).DataCell.HasValueFromImport = True Then
+
                     'Display Value Label
                     DisplayValueLabel(Cells(Rows, Cols), Cells(Rows, Cols).DataCell.Value)
+
                 End If
             Next
         Next
@@ -189,12 +194,11 @@
     ''' <param name="ParentCell"></param>
     ''' <param name="value"></param>
     ''' <param name="Removing">True or False Value according to if the function is removing a candidate or adding one</param>
-
-    Public Sub UpdateLabels(ParentCell As Display_Cells, value As Integer, Removing As Boolean)
+    Public Sub UpdateLabels(ParentCell As Display_Cells, value As Integer, Removing As Boolean?)
 
         If Removing = True Then
             ParentCell.DisplayCandidates.Remove(value)
-        Else
+        ElseIf Removing = False Then
             ParentCell.DisplayCandidates.Add(value)
         End If
 
@@ -212,10 +216,12 @@
 
     End Sub
 
+    'TODO
     Public Sub Choosedifficulty()
         'Create a bit of logic to choose the difficulty for the user.
     End Sub
 
+    'TODO
     Public Sub PrimeForManualEntry()
         'Ready the board for manual entry. Create some new buttons that tell the computer when the user is done with manual entry.
         'Maybe a boolean value can be used to know what mode the game is in, so the input hander can know what is going on.
@@ -293,6 +299,7 @@
 
     End Sub
 
+    'Updates the Keypad to reflect the current cell clicked on
     Public Sub UpdateKeypads()
 
         If IsNothing(LastClicked) Then
