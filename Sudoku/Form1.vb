@@ -42,7 +42,24 @@ Public Class Form1
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        Game.temp()
+
+        ObjBoard.CalculateCandidates(Game.Board.BaseBoardCells)
+        For rows = 0 To 8
+            For cols = 0 To 8
+                Game.Cells(rows, cols).DisplayCandidates = Game.Board.BaseBoardCells(rows, cols).DataCandidates
+                Game.UpdateLabels(Game.Cells(rows, cols), 10, vbNull)
+            Next
+        Next
+    End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+        Lstbx.Items.Clear()
+
+        For rows = 0 To 8
+            For cols = 0 To 8
+                ObjBoard.PrintCandidates(Game.Board.BaseBoardCells(rows, cols))
+            Next
+        Next
     End Sub
 End Class
 

@@ -27,7 +27,7 @@ Public Class ObjBoard
                     Else
                         With BaseBoardCells(Rows, Cols)
                             .HasValueFromImport = False
-                            .Value = vbNull
+                            .Value = -1
                             .DataCandidates.Clear()
                         End With
                     End If
@@ -37,6 +37,7 @@ Public Class ObjBoard
                         If line(Cols) = "0" Then
                             For i = 1 To 9
                                 .DataCandidates.Add(i)
+                                .Value = -1
                             Next
                         Else
                             .Value = Integer.Parse(line(Cols))
@@ -44,6 +45,7 @@ Public Class ObjBoard
                         End If
 
                     End With
+
 
                     If Rows >= 0 And Rows <= 2 Then
                         BaseBoardCells(Rows, Cols).BoxLocation.Y = 0
@@ -62,6 +64,9 @@ Public Class ObjBoard
                     End If
 
                     BaseBoardCells(Rows, Cols).CellLocation = New Point(Cols, Rows)
+
+                    PrintCandidates(BaseBoardCells(Rows, Cols))
+
                 Next
             Next
         End Using
@@ -71,22 +76,47 @@ Public Class ObjBoard
 
     End Sub
 
-    Public Sub CalculateCandidates(ByRef Cells(,) As ObjCell)
+    'Calculates which candidates must be removed from each cell
+    Shared Sub CalculateCandidates(ByRef Cells(,) As ObjCell)
 
         For rows = 0 To 8
             For cols = 0 To 8
 
-                Form1.Lstbx.Items.Add(Cells(rows, cols).Value = vbNull)
+                If (Cells(rows, cols).Value) <> -1 Then
 
+                    For TEMPROWS = 0 To 8
+                        Cells(TEMPROWS, cols).DataCandidates.Remove(Cells(rows, cols).Value)
+                    Next
+
+                    For TEMPCOLS = 0 To 8
+                        Cells(rows, TEMPCOLS).DataCandidates.Remove(Cells(rows, cols).Value)
+                    Next
+
+                    For TEMPROWS_ = Cells(rows, cols).BoxLocation.Y To Cells(rows, cols).BoxLocation.Y + 2
+                        For TEMPCOLS_ = Cells(rows, cols).BoxLocation.X To Cells(rows, cols).BoxLocation.X + 2
+                            Cells(TEMPROWS_, TEMPCOLS_).DataCandidates.Remove(Cells(rows, cols).Value)
+                        Next
+                    Next
+
+                End If
             Next
         Next
 
     End Sub
+    'Prints the candiates in a certain cell
+    Shared Sub PrintCandidates(ParentCell As ObjCell)
 
+        Dim str As String = "[ "
+        For Each ele In ParentCell.DataCandidates
+            str = str + Convert.ToString(ele) + ","
+        Next
+        str += "]"
+        Form1.Lstbx.Items.Add("[ " + Convert.ToString(ParentCell.CellLocation.X) + " " + Convert.ToString(ParentCell.CellLocation.Y) + " ] -->" + str)
+    End Sub
 End Class
 
 Public Class ObjCell
-    Public Value As Integer?
+    Public Value As Integer
     Public HasValueFromImport As Boolean
 
     Public DataCandidates As New ArrayList
@@ -98,7 +128,7 @@ Public Class ObjCell
 
     Public Sub New()
         HasValueFromImport = False
-        Value = vbNull
+        Value = -1
         DataCandidates.Clear()
         DataCandidates.Capacity = 9
     End Sub
