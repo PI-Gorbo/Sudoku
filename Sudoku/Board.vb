@@ -204,8 +204,8 @@ Public Class ObjBoard
             If TempRows = rows Then
                 Continue For
             End If
-            If Board(TempRows, cols).Value = Board(rows, cols).Value Then
-                Form1.Lstbx.Items.Add("ERROR AT [" + Convert.ToString(cols) + " " + Convert.ToString(rows) + " ]" + " with [" + Convert.ToString(cols) + " " + Convert.ToString(TempRows) + " ]")
+            If Board(TempRows, cols).Value = Board(rows, cols).Value Or Board(TempRows, cols).Value = -1 Then
+                'Form1.Lstbx.Items.Add("ERROR AT [" + Convert.ToString(cols) + " " + Convert.ToString(rows) + " ]" + " with [" + Convert.ToString(cols) + " " + Convert.ToString(TempRows) + " ]")
 
                 Return False
             End If
@@ -216,8 +216,8 @@ Public Class ObjBoard
                 Continue For
             End If
 
-            If Board(rows, TempCols).Value = Board(rows, cols).Value Then
-                Form1.Lstbx.Items.Add("ERROR AT [" + Convert.ToString(cols) + " " + Convert.ToString(rows) + " ]")
+            If Board(rows, TempCols).Value = Board(rows, cols).Value Or Board(rows, TempCols).Value = -1 Then
+                'Form1.Lstbx.Items.Add("ERROR AT [" + Convert.ToString(cols) + " " + Convert.ToString(rows) + " ]")
                 Return False
             End If
         Next
@@ -225,48 +225,36 @@ Public Class ObjBoard
         For TempRows = Board(rows, cols).BoxLocation.Y To Board(rows, cols).BoxLocation.Y + 2
             For TempCols = Board(rows, cols).BoxLocation.X To Board(rows, cols).BoxLocation.X + 2
 
-                If TempRows = rows And TempCols = cols Then
+                If TempRows = rows And TempCols = cols Or Board(TempRows, TempCols).Value = -1 Then
                     Continue For
                 End If
 
                 If Board(TempRows, TempCols).Value = Board(rows, cols).Value Then
-                    Form1.Lstbx.Items.Add("ERROR AT [" + cols + " " + rows + " ]")
+                    'Form1.Lstbx.Items.Add("ERROR AT [" + Convert.ToString(cols) + " " + Convert.ToString(rows) + " ]")
 
                     Return False
                 End If
             Next
         Next
-        'Or Board(TempRows, TempCols).Value = -1 Or Board(rows, TempCols).Value = -1 Or Board(TempRows, cols).Value = -1
         Return True
     End Function
 
     'Brute Force.
     Public Sub Buteforce(ByRef Board As ObjCell(,), _Solved As Boolean)
 
-        Dim _Err As Boolean = False
-        Dim _ValueNeedsToBeChanged As Boolean = False
+        Dim ValuesToBeChanged As Boolean
+        Dim Err As Boolean
 
-        'Remove all possible candidates and replace single candidates with values, then loop untill values to be changed = false. 
-        'Must check if the board is complete every time.
-
-        While BoardSolved(Board) = False Or _Err = False Or _ValueNeedsToBeChanged = False
-
-            _ValueNeedsToBeChanged = True
-
-            CalculateCandidates(Board, _ValueNeedsToBeChanged, _Err)
-            If _ValueNeedsToBeChanged = True Then
+        Do
+            CalculateCandidates(Board, ValuesToBeChanged, Err)
+            If ValuesToBeChanged = True Then
                 SetValues(Board)
-                _ValueNeedsToBeChanged = False
-
             End If
 
+        Loop While BoardSolved(Board) = False Or ValuesToBeChanged = False
 
-        End While
 
-        If _Err = True Then
-            MsgBox("Error with current board.")
-            Exit Sub
-        End If
+
     End Sub
 
     'If the Cell has one candidate in it, it can be deduced tha the candidate has to be the value of the cell. Therefore, set the candidate to the value of the cell.
@@ -281,6 +269,7 @@ Public Class ObjBoard
         Next
 
     End Sub
+
 End Class
 
 Public Class ObjCell
