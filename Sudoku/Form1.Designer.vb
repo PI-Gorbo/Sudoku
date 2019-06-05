@@ -38,6 +38,7 @@ Partial Class Form1
         Me.Keypad_1 = New System.Windows.Forms.Button()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.Button2 = New System.Windows.Forms.Button()
+        Me.Button3 = New System.Windows.Forms.Button()
         Me.Gp_Editing.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -45,16 +46,16 @@ Partial Class Form1
         '
         Me.Lstbx.FormattingEnabled = True
         Me.Lstbx.ItemHeight = 16
-        Me.Lstbx.Location = New System.Drawing.Point(1372, 44)
-        Me.Lstbx.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Lstbx.Location = New System.Drawing.Point(944, 24)
+        Me.Lstbx.Margin = New System.Windows.Forms.Padding(4)
         Me.Lstbx.Name = "Lstbx"
-        Me.Lstbx.Size = New System.Drawing.Size(248, 596)
+        Me.Lstbx.Size = New System.Drawing.Size(324, 740)
         Me.Lstbx.TabIndex = 0
         '
         'Btn_NewGame
         '
         Me.Btn_NewGame.Location = New System.Drawing.Point(775, 68)
-        Me.Btn_NewGame.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Btn_NewGame.Margin = New System.Windows.Forms.Padding(4)
         Me.Btn_NewGame.Name = "Btn_NewGame"
         Me.Btn_NewGame.Size = New System.Drawing.Size(100, 28)
         Me.Btn_NewGame.TabIndex = 1
@@ -79,7 +80,7 @@ Partial Class Form1
         '
         Me.Rad_Pen.AutoSize = True
         Me.Rad_Pen.Location = New System.Drawing.Point(7, 50)
-        Me.Rad_Pen.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Rad_Pen.Margin = New System.Windows.Forms.Padding(4)
         Me.Rad_Pen.Name = "Rad_Pen"
         Me.Rad_Pen.Size = New System.Drawing.Size(54, 21)
         Me.Rad_Pen.TabIndex = 4
@@ -91,7 +92,7 @@ Partial Class Form1
         '
         Me.Rad_Pencil.AutoSize = True
         Me.Rad_Pencil.Location = New System.Drawing.Point(7, 22)
-        Me.Rad_Pencil.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Rad_Pencil.Margin = New System.Windows.Forms.Padding(4)
         Me.Rad_Pencil.Name = "Rad_Pencil"
         Me.Rad_Pencil.Size = New System.Drawing.Size(67, 21)
         Me.Rad_Pencil.TabIndex = 5
@@ -103,7 +104,7 @@ Partial Class Form1
         '
         Me.Keypad_2.Font = New System.Drawing.Font("Symbol", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
         Me.Keypad_2.Location = New System.Drawing.Point(807, 231)
-        Me.Keypad_2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Keypad_2.Margin = New System.Windows.Forms.Padding(4)
         Me.Keypad_2.Name = "Keypad_2"
         Me.Keypad_2.Size = New System.Drawing.Size(51, 36)
         Me.Keypad_2.TabIndex = 4
@@ -115,7 +116,7 @@ Partial Class Form1
         '
         Me.Keypad_3.Font = New System.Drawing.Font("Symbol", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
         Me.Keypad_3.Location = New System.Drawing.Point(867, 231)
-        Me.Keypad_3.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Keypad_3.Margin = New System.Windows.Forms.Padding(4)
         Me.Keypad_3.Name = "Keypad_3"
         Me.Keypad_3.Size = New System.Drawing.Size(51, 36)
         Me.Keypad_3.TabIndex = 5
@@ -127,7 +128,7 @@ Partial Class Form1
         '
         Me.Keypad_6.Font = New System.Drawing.Font("Symbol", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
         Me.Keypad_6.Location = New System.Drawing.Point(867, 274)
-        Me.Keypad_6.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Keypad_6.Margin = New System.Windows.Forms.Padding(4)
         Me.Keypad_6.Name = "Keypad_6"
         Me.Keypad_6.Size = New System.Drawing.Size(51, 36)
         Me.Keypad_6.TabIndex = 8
@@ -139,7 +140,7 @@ Partial Class Form1
         '
         Me.Keypad_5.Font = New System.Drawing.Font("Symbol", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
         Me.Keypad_5.Location = New System.Drawing.Point(807, 274)
-        Me.Keypad_5.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Keypad_5.Margin = New System.Windows.Forms.Padding(4)
         Me.Keypad_5.Name = "Keypad_5"
         Me.Keypad_5.Size = New System.Drawing.Size(51, 36)
         Me.Keypad_5.TabIndex = 7
@@ -151,7 +152,7 @@ Partial Class Form1
         '
         Me.Keypad_4.Font = New System.Drawing.Font("Symbol", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
         Me.Keypad_4.Location = New System.Drawing.Point(749, 274)
-        Me.Keypad_4.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Keypad_4.Margin = New System.Windows.Forms.Padding(4)
         Me.Keypad_4.Name = "Keypad_4"
         Me.Keypad_4.Size = New System.Drawing.Size(51, 36)
         Me.Keypad_4.TabIndex = 6
@@ -163,7 +164,7 @@ Partial Class Form1
         '
         Me.Keypad_9.Font = New System.Drawing.Font("Symbol", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
         Me.Keypad_9.Location = New System.Drawing.Point(867, 318)
-        Me.Keypad_9.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Keypad_9.Margin = New System.Windows.Forms.Padding(4)
         Me.Keypad_9.Name = "Keypad_9"
         Me.Keypad_9.Size = New System.Drawing.Size(51, 36)
         Me.Keypad_9.TabIndex = 11
@@ -175,7 +176,7 @@ Partial Class Form1
         '
         Me.Keypad_8.Font = New System.Drawing.Font("Symbol", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
         Me.Keypad_8.Location = New System.Drawing.Point(807, 318)
-        Me.Keypad_8.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Keypad_8.Margin = New System.Windows.Forms.Padding(4)
         Me.Keypad_8.Name = "Keypad_8"
         Me.Keypad_8.Size = New System.Drawing.Size(51, 36)
         Me.Keypad_8.TabIndex = 10
@@ -187,7 +188,7 @@ Partial Class Form1
         '
         Me.Keypad_7.Font = New System.Drawing.Font("Symbol", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
         Me.Keypad_7.Location = New System.Drawing.Point(749, 318)
-        Me.Keypad_7.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Keypad_7.Margin = New System.Windows.Forms.Padding(4)
         Me.Keypad_7.Name = "Keypad_7"
         Me.Keypad_7.Size = New System.Drawing.Size(51, 36)
         Me.Keypad_7.TabIndex = 9
@@ -199,7 +200,7 @@ Partial Class Form1
         '
         Me.Keypad_1.Font = New System.Drawing.Font("Symbol", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
         Me.Keypad_1.Location = New System.Drawing.Point(749, 230)
-        Me.Keypad_1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Keypad_1.Margin = New System.Windows.Forms.Padding(4)
         Me.Keypad_1.Name = "Keypad_1"
         Me.Keypad_1.Size = New System.Drawing.Size(51, 36)
         Me.Keypad_1.TabIndex = 14
@@ -210,7 +211,7 @@ Partial Class Form1
         'Button1
         '
         Me.Button1.Location = New System.Drawing.Point(775, 373)
-        Me.Button1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Button1.Margin = New System.Windows.Forms.Padding(4)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(100, 28)
         Me.Button1.TabIndex = 15
@@ -227,12 +228,23 @@ Partial Class Form1
         Me.Button2.Text = "Button2"
         Me.Button2.UseVisualStyleBackColor = True
         '
+        'Button3
+        '
+        Me.Button3.Location = New System.Drawing.Point(775, 445)
+        Me.Button3.Margin = New System.Windows.Forms.Padding(4)
+        Me.Button3.Name = "Button3"
+        Me.Button3.Size = New System.Drawing.Size(100, 28)
+        Me.Button3.TabIndex = 17
+        Me.Button3.Text = "Button3"
+        Me.Button3.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer))
         Me.ClientSize = New System.Drawing.Size(1637, 784)
+        Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.Keypad_1)
@@ -247,7 +259,7 @@ Partial Class Form1
         Me.Controls.Add(Me.Gp_Editing)
         Me.Controls.Add(Me.Btn_NewGame)
         Me.Controls.Add(Me.Lstbx)
-        Me.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Margin = New System.Windows.Forms.Padding(4)
         Me.Name = "Form1"
         Me.Tag = ""
         Me.Text = "Form1"
@@ -273,4 +285,5 @@ Partial Class Form1
     Friend WithEvents Keypad_1 As Button
     Friend WithEvents Button1 As Button
     Friend WithEvents Button2 As Button
+    Friend WithEvents Button3 As Button
 End Class

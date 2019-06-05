@@ -46,10 +46,12 @@ Public Class Form1
         ObjBoard.CalculateCandidates(Game.Board.BaseBoardCells)
         For rows = 0 To 8
             For cols = 0 To 8
-                Game.Cells(rows, cols).DisplayCandidates = Game.Board.BaseBoardCells(rows, cols).DataCandidates
+                Game.Cells(rows, cols).DisplayCandidates = Game.Board.BaseBoardCells(rows, cols).DataCandidates.Clone()
                 Game.UpdateLabels(Game.Cells(rows, cols), 10, vbNull)
             Next
         Next
+
+        Game.UpdateKeypads()
     End Sub
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
@@ -57,44 +59,21 @@ Public Class Form1
 
         For rows = 0 To 8
             For cols = 0 To 8
-                ObjBoard.PrintCandidates(Game.Board.BaseBoardCells(rows, cols))
+                Game.Board.PrintCandidates(Game.Board.BaseBoardCells(rows, cols))
             Next
         Next
     End Sub
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+        Dim X As Boolean = False
+        Game.Board.Buteforce(Game.Board.BaseBoardCells, X)
+        For rows = 0 To 8
+            For cols = 0 To 8
+                Game.Cells(rows, cols).DisplayCandidates = Game.Board.BaseBoardCells(rows, cols).DataCandidates.Clone()
+                Game.UpdateLabels(Game.Cells(rows, cols), 10, vbNull)
+            Next
+        Next
+        'Lstbx.Items.Clear()
+        'Lstbx.Items.Add(Game.Board.BoardSolved(Game.Board.BaseBoardCells))
+    End Sub
 End Class
-
-'Dim Game As Gameboard
-'Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-'    Game = New Gameboard(20, 20)
-'AddHandler() Keypad_1.Click, AddressOf Game.Edit
-'    AddHandler() Keypad_2.Click, AddressOf Game.Edit
-'    AddHandler() Keypad_3.Click, AddressOf Game.Edit
-'    AddHandler() Keypad_4.Click, AddressOf Game.Edit
-'    AddHandler() Keypad_5.Click, AddressOf Game.Edit
-'    AddHandler() Keypad_6.Click, AddressOf Game.Edit
-'    AddHandler() Keypad_7.Click, AddressOf Game.Edit
-'    AddHandler() Keypad_8.Click, AddressOf Game.Edit
-'    AddHandler() Keypad_9.Click, AddressOf Game.Edit
-'    Rad_Pencil.Checked = True
-'End Sub
-
-'Private Sub Btn_NewGame_Click(sender As Object, e As EventArgs) Handles Btn_NewGame.Click
-'    Game.Import_New_Board()
-'    Game.Update_Display()
-'End Sub
-
-'Private Sub Rad_Pencil_CheckedChanged(sender As Object, e As EventArgs) Handles Rad_Pencil.CheckedChanged
-'    Game.UpdateButtons()
-'End Sub
-
-'Private Sub Rad_Pen_CheckedChanged(sender As Object, e As EventArgs) Handles Rad_Pen.CheckedChanged
-'    Game.UpdateButtons()
-'End Sub
-
-'Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-'    Game.Match_DataCandidates_To_Candidates()
-'End Sub
-
-'Private Sub Btn_Clear_Click(sender As Object, e As EventArgs) Handles Btn_Clear.Click
-'    Game.ClearLabels()
-'End Sub

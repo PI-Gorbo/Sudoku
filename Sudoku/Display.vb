@@ -27,6 +27,7 @@
         'Create 9x9 display cells object and add the datacell property to it. 
     End Sub
 
+
     Public Sub NewGame()
         LastClicked = Nothing
         Board.NewBoard()
