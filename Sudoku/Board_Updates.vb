@@ -63,27 +63,36 @@ Partial Public Class Gameboard
 
     End Sub
 
-    Public Sub UpdateLabels(ParentCell As Display_Cells, Labels As Boolean?)
+    Public Sub UpdateLabels(DisplayCells(,) As Display_Cells, DataCells(,) As ObjCell)
 
-        For rows = 0 To 2
-            For cols = 0 To 2
-                If Labels = True And ParentCell.DisplayCandidates.Count = 1 Then
-                    DisplayValueLabel(ParentCell, ParentCell.DisplayCandidates(0))
-                Else
-                    ParentCell.Labels(rows, cols).Text = ""
-                    For Each ele In ParentCell.DisplayCandidates
-                        If ((rows * 3 + cols) + 1) = Integer.Parse(ele) Then
-                            ParentCell.Labels(rows, cols).Text = ele
-                        End If
+        For rows = 0 To 8
+            For cols = 0 To 8
+
+                If DisplayCells(rows, cols).DisplayCandidates.Count = 0 And DataCells(rows, cols).HasValueFromImport = False Then
+                    DisplayValueLabel(DisplayCells(rows, cols), DataCells(rows, cols).Value)
+                End If
+                If DisplayCells(rows, cols).DisplayCandidates.Count <> 0 Then
+
+                    For lblrows = 0 To 2
+                        For lblcols = 0 To 2
+                            DisplayCells(rows, cols).Labels(lblrows, lblcols).Text = ""
+                            For Each ele In DisplayCells(rows, cols).DisplayCandidates
+                                If ((lblrows * 3 + lblcols) + 1) = Integer.Parse(ele) Then
+                                    DisplayCells(rows, cols).Labels(lblrows, lblcols).Text = ele
+                                End If
+                            Next
+                        Next
                     Next
                 End If
+
 
             Next
         Next
 
+
     End Sub
 
-    Shared Sub MatchDatatoDisplay(Display(,) As Display_Cells, Data(,) As ObjCell)
+    Shared Sub UpdateDisplayValues(ByRef Display(,) As Display_Cells, ByRef Data(,) As ObjCell)
 
         For rows = 0 To 8
             For cols = 0 To 8
@@ -192,5 +201,7 @@ Partial Public Class Gameboard
 
         End If
     End Sub
+
+
 
 End Class

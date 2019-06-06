@@ -17,7 +17,7 @@ Public Class ObjBoard
 
     Public Sub NewBoard()
 
-        Form1.Lstbx.Items.Clear()
+        'Form1.Lstbx.Items.Clear()
 
         Dim r As New Random
         Dim f = Convert.ToString(Filelist(r.Next(0, Filelist.Count)).Fullname)
@@ -240,14 +240,9 @@ Public Class ObjBoard
         Return True
     End Function
 
-    'Brute Force.
-    Public Sub Buteforce(ByRef Board As ObjCell(,))
-
-
-    End Sub
-
     'If the Cell has one candidate in it, it can be deduced tha the candidate has to be the value of the cell. Therefore, set the candidate to the value of the cell.
     Public Sub SetValues(Board As ObjCell(,))
+
         For rows = 0 To 8
             For cols = 0 To 8
                 If Board(rows, cols).DataCandidates.Count = 1 Then
@@ -258,6 +253,14 @@ Public Class ObjBoard
         Next
 
     End Sub
+
+    'Brute Force.
+    Public Sub Buteforce(ByRef Board As ObjCell(,))
+
+
+    End Sub
+
+
 End Class
 
 Public Class ObjCell
