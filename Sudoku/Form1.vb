@@ -65,15 +65,24 @@ Public Class Form1
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
-        Dim X As Boolean = False
-        Game.Board.Buteforce(Game.Board.BaseBoardCells, X)
+        'Dim X As Boolean = False
+        'Game.Board.Buteforce(Game.Board.BaseBoardCells)
+        'For rows = 0 To 8
+        '    For cols = 0 To 8
+        '        Game.Cells(rows, cols).DisplayCandidates = Game.Board.BaseBoardCells(rows, cols).DataCandidates.Clone()
+        '        Game.UpdateLabels(Game.Cells(rows, cols), 10, vbNull)
+        '    Next
+        'Next
+        ''Lstbx.Items.Clear()
+        ''Lstbx.Items.Add(Game.Board.BoardSolved(Game.Board.BaseBoardCells))
+
+        ObjBoard.CalculateCandidates(Game.Board.BaseBoardCells)
+        Game.Board.SetValues(Game.Board.BaseBoardCells)
         For rows = 0 To 8
             For cols = 0 To 8
-                Game.Cells(rows, cols).DisplayCandidates = Game.Board.BaseBoardCells(rows, cols).DataCandidates.Clone()
                 Game.UpdateLabels(Game.Cells(rows, cols), 10, vbNull)
+
             Next
         Next
-        'Lstbx.Items.Clear()
-        'Lstbx.Items.Add(Game.Board.BoardSolved(Game.Board.BaseBoardCells))
     End Sub
 End Class

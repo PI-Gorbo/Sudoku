@@ -241,32 +241,9 @@ Public Class ObjBoard
     End Function
 
     'Brute Force.
-    Public Sub Buteforce(ByRef Board As ObjCell(,), _Solved As Boolean)
-
-        Dim _Err As Boolean = False
-        Dim _ValueNeedsToBeChanged As Boolean = False
-
-        'Remove all possible candidates and replace single candidates with values, then loop untill values to be changed = false. 
-        'Must check if the board is complete every time.
-
-        While BoardSolved(Board) = False Or _Err = False Or _ValueNeedsToBeChanged = False
-
-            _ValueNeedsToBeChanged = True
-
-            CalculateCandidates(Board, _ValueNeedsToBeChanged, _Err)
-            If _ValueNeedsToBeChanged = True Then
-                SetValues(Board)
-                _ValueNeedsToBeChanged = False
-
-            End If
+    Public Sub Buteforce(ByRef Board As ObjCell(,))
 
 
-        End While
-
-        If _Err = True Then
-            MsgBox("Error with current board.")
-            Exit Sub
-        End If
     End Sub
 
     'If the Cell has one candidate in it, it can be deduced tha the candidate has to be the value of the cell. Therefore, set the candidate to the value of the cell.
