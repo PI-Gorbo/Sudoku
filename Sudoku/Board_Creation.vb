@@ -25,7 +25,7 @@ Public Class Gameboard
         CreateLabels()
         Board = New ObjBoard
         Board.NewBoard()
-        PrimeBoard()
+        PrimeNewBoard()
         'Create 9x9 display cells object and add the datacell property to it. 
     End Sub
 
@@ -33,7 +33,7 @@ Public Class Gameboard
     Public Sub NewGame()
         LastClicked = Nothing
         Board.NewBoard()
-        PrimeBoard()
+        PrimeNewBoard()
     End Sub
 
     'Takes the current board object and creates labels with the values on the board
@@ -101,7 +101,7 @@ Public Class Gameboard
     End Sub
 
     'Takes an input board, and displays it on the screen.
-    Public Sub PrimeBoard()
+    Public Sub PrimeNewBoard()
 
         'Add the values to the labels
 
@@ -114,7 +114,6 @@ Public Class Gameboard
                 Cells(Rows, Cols).ValueLabel.BackColor = Color.White
 
                 If Cells(Rows, Cols).DataCell.HasValueFromImport = True Then
-
                     'Display Value Label
                     DisplayValueLabel(Cells(Rows, Cols), Cells(Rows, Cols).DataCell.Value)
 
@@ -136,8 +135,11 @@ Public Class Gameboard
             .Enabled = True
             .Text = value
             If ParentCell.DataCell.HasValueFromImport = True Then
-                .ForeColor = Color.DarkBlue
+                .ForeColor = Color.DarkCyan
+            Else
+                .ForeColor = Color.Black
             End If
+
         End With
 
         For rows = 0 To 2

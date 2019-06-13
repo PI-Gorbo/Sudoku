@@ -6,15 +6,15 @@ Public Class Form1
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Game = New Gameboard
 
-        AddHandler Keypad_1.Click, AddressOf Game.InputKeypad
-        AddHandler Keypad_2.Click, AddressOf Game.InputKeypad
-        AddHandler Keypad_3.Click, AddressOf Game.InputKeypad
-        AddHandler Keypad_4.Click, AddressOf Game.InputKeypad
-        AddHandler Keypad_5.Click, AddressOf Game.InputKeypad
-        AddHandler Keypad_6.Click, AddressOf Game.InputKeypad
-        AddHandler Keypad_7.Click, AddressOf Game.InputKeypad
-        AddHandler Keypad_8.Click, AddressOf Game.InputKeypad
-        AddHandler Keypad_9.Click, AddressOf Game.InputKeypad
+        AddHandler Keypad_1.Click, AddressOf Game.Keypad_Input
+        AddHandler Keypad_2.Click, AddressOf Game.Keypad_Input
+        AddHandler Keypad_3.Click, AddressOf Game.Keypad_Input
+        AddHandler Keypad_4.Click, AddressOf Game.Keypad_Input
+        AddHandler Keypad_5.Click, AddressOf Game.Keypad_Input
+        AddHandler Keypad_6.Click, AddressOf Game.Keypad_Input
+        AddHandler Keypad_7.Click, AddressOf Game.Keypad_Input
+        AddHandler Keypad_8.Click, AddressOf Game.Keypad_Input
+        AddHandler Keypad_9.Click, AddressOf Game.Keypad_Input
 
         Game.Keypads.Add(Keypad_1)
         Game.Keypads.Add(Keypad_2)
@@ -66,8 +66,15 @@ Public Class Form1
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
 
-        ObjBoard.CalculateCandidates(Game.Board.BaseBoardCells)
-        Game.Board.SetValues(Game.Board.BaseBoardCells)
+        Dim _Continue As Boolean = True
+        Dim count As Integer = 0
+
+        Do Until Game.Board.BoardSolved(Game.Board.BaseBoardCells) = True Or _Continue = False 'Or count = 100
+
+            ObjBoard.ResolveCandidates(Game.Board.BaseBoardCells, _Continue, vbNull)
+            Game.Board.SetValues(Game.Board.BaseBoardCells)
+            'count += 1
+        Loop
         Gameboard.UpdateDisplayValues(Game.Cells, Game.Board.BaseBoardCells)
         Game.UpdateLabels(Game.Cells, Game.Board.BaseBoardCells)
 
@@ -79,4 +86,5 @@ Public Class Form1
         Lstbx.Items.Add(Game.Board.BoardSolved(Game.Board.BaseBoardCells))
 
     End Sub
+
 End Class

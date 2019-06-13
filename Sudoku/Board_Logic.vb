@@ -116,7 +116,7 @@ Public Class ObjBoard
     ''' <param name="Cells"> Valid 8x8 cell array </param>
     ''' <param name="ValueToBeChanged"> A byVal bool that returns if a value needs to be changed </param>
     ''' <param name="InvalidBoard"> A byVal bool that retuns if a value needs to be changed </param>
-    Shared Sub CalculateCandidates(ByVal Cells(,) As ObjCell, ByVal ValueToBeChanged As Boolean, ByVal InvalidBoard As Boolean)
+    Shared Sub ResolveCandidates(ByRef Cells(,) As ObjCell, ByRef ValueToBeChanged As Boolean, ByRef InvalidBoard As Boolean)
 
         ValueToBeChanged = False
         InvalidBoard = False
@@ -128,8 +128,9 @@ Public Class ObjBoard
 
                     For TEMPROWS = 0 To 8
                         Cells(TEMPROWS, cols).DataCandidates.Remove(Cells(rows, cols).Value)
-                        If Cells(TEMPROWS, cols).DataCandidates.Count = 1 Then
+                        If Cells(TEMPROWS, cols).DataCandidates.Count = 1 And ValueToBeChanged = False Then
                             ValueToBeChanged = True
+                            Form1.Lstbx.Items.Add("Found a Cell that can be upgraded at [ " + Convert.ToString(TEMPROWS) + " " + Convert.ToString(cols) + " ]")
                         End If
 
                         If Cells(TEMPROWS, cols).DataCandidates.Count = 0 Then
@@ -139,7 +140,8 @@ Public Class ObjBoard
 
                     For TEMPCOLS = 0 To 8
                         Cells(rows, TEMPCOLS).DataCandidates.Remove(Cells(rows, cols).Value)
-                        If Cells(rows, TEMPCOLS).DataCandidates.Count = 1 Then
+                        If Cells(rows, TEMPCOLS).DataCandidates.Count = 1 And ValueToBeChanged = False Then
+                            Form1.Lstbx.Items.Add("Found a Cell that can be upgraded at [ " + Convert.ToString(rows) + " " + Convert.ToString(TEMPCOLS) + " ]")
                             ValueToBeChanged = True
                         End If
 
@@ -152,7 +154,9 @@ Public Class ObjBoard
                         For TEMPCOLS_ = Cells(rows, cols).BoxLocation.X To Cells(rows, cols).BoxLocation.X + 2
                             Cells(TEMPROWS_, TEMPCOLS_).DataCandidates.Remove(Cells(rows, cols).Value)
 
-                            If Cells(TEMPROWS_, TEMPCOLS_).DataCandidates.Count = 1 Then
+                            If Cells(TEMPROWS_, TEMPCOLS_).DataCandidates.Count = 1 And ValueToBeChanged = False Then
+                                Form1.Lstbx.Items.Add("Found a Cell that can be upgraded at [ " + Convert.ToString(TEMPROWS_) + " " + Convert.ToString(TEMPCOLS_) + " ]")
+
                                 ValueToBeChanged = True
                             End If
 
@@ -181,7 +185,7 @@ Public Class ObjBoard
     End Sub
 
     'Sweeps the board to check if the board has SOlved. Makes calls to isValidCell
-    Public Function BoardSolved(Board As ObjCell(,))
+    Public Function isBoardSolved(Board As ObjCell(,))
         Dim solved As Boolean = False
 
         For rows = 0 To 8
@@ -204,7 +208,7 @@ Public Class ObjBoard
             If TempRows = rows Then
                 Continue For
             End If
-            If Board(TempRows, cols).Value = Board(rows, cols).Value Then
+            If Board(TempRows, cols).Value = Board(rows, cols).Value Or Board(TempRows, cols).Value = -1 Then
                 Form1.Lstbx.Items.Add("ERROR AT [" + Convert.ToString(cols) + " " + Convert.ToString(rows) + " ]" + " with [" + Convert.ToString(cols) + " " + Convert.ToString(TempRows) + " ]")
 
                 Return False
@@ -216,7 +220,7 @@ Public Class ObjBoard
                 Continue For
             End If
 
-            If Board(rows, TempCols).Value = Board(rows, cols).Value Then
+            If Board(rows, TempCols).Value = Board(rows, cols).Value Or Board(rows, TempCols).Value = -1 Then
                 Form1.Lstbx.Items.Add("ERROR AT [" + Convert.ToString(cols) + " " + Convert.ToString(rows) + " ]")
                 Return False
             End If
@@ -229,8 +233,8 @@ Public Class ObjBoard
                     Continue For
                 End If
 
-                If Board(TempRows, TempCols).Value = Board(rows, cols).Value Then
-                    Form1.Lstbx.Items.Add("ERROR AT [" + cols + " " + rows + " ]")
+                If Board(TempRows, TempCols).Value = Board(rows, cols).Value Or Board(TempRows, TempCols).Value = -1 Then
+                    Form1.Lstbx.Items.Add("ERROR AT [" + Convert.ToString(cols) + " " + Convert.ToString(rows) + " ]")
 
                     Return False
                 End If
@@ -241,11 +245,12 @@ Public Class ObjBoard
     End Function
 
     'If the Cell has one candidate in it, it can be deduced tha the candidate has to be the value of the cell. Therefore, set the candidate to the value of the cell.
-    Public Sub SetValues(Board As ObjCell(,))
+    Public Sub ResolveValues(Board As ObjCell(,))
 
         For rows = 0 To 8
             For cols = 0 To 8
                 If Board(rows, cols).DataCandidates.Count = 1 Then
+                    Form1.Lstbx.Items.Add("Cell at [ " + Convert.ToString(rows) + " " + Convert.ToString(cols) + " ]")
                     Board(rows, cols).Value = Board(rows, cols).DataCandidates(0)
                     Board(rows, cols).DataCandidates.Clear()
                 End If
@@ -254,11 +259,87 @@ Public Class ObjBoard
 
     End Sub
 
-    'Brute Force.
-    Public Sub Buteforce(ByRef Board As ObjCell(,))
+    Public Sub ResolveBoard(ByRef Board As ObjCell(,), ByRef solved As Boolean, ByRef _Err As Boolean)
 
+        Dim _Continue As Boolean = False
+        Do Until isBoardSolved(Board) = True Or _Continue = False
+
+            ResolveCandidates(Board, _Continue, _Err)
+            ResolveValues(Board)
+
+            If _Err = True Then
+                Exit Sub
+            End If
+
+        Loop
+
+        solved = isBoardSolved(Board)
 
     End Sub
+    '__________________________________________________________________'
+
+    'Brute Force.
+    Function BruteForce(ByRef Board As ObjCell(,))
+
+        Dim solved, _err As Boolean
+
+        If BoardValid(Board) = False Then
+            Form1.Lstbx.Items.Add("Invalid Board")
+            Exit Function
+        End If
+
+        ResolveBoard(Board, solved, _err)
+        If solved = True Then
+
+            Form1.Lstbx.Items.Add("Board Solved")
+            Return Board
+            Exit Function
+
+        End If
+
+        'Find open cell
+        Dim CandidateIndexMax, count As Integer
+        Dim SelectedCell As Point = Nothing
+        For Rows = 0 To 8
+            For Cols = 0 To 8
+
+                If Board(Rows, Cols).Value = -1 Then
+                    SelectedCell = New Point(Cols, Rows)
+                    Exit For
+
+                End If
+
+            Next
+
+            If SelectedCell <> Nothing Then
+                Exit For
+            End If
+
+        Next
+
+
+        'Get number of canidates
+        CandidateIndexMax = Board(SelectedCell.Y, SelectedCell.X).DataCandidates.Count - 1
+        count = 0
+
+        Dim Tempboard = Nothing
+        Do
+            Tempboard = Board.Clone()
+            'Choose Candidate
+            Tempboard(SelectedCell.Y, SelectedCell.X).value = Tempboard(SelectedCell.Y, SelectedCell.X).DataCandidates(count)
+            Tempboard(SelectedCell.Y, SelectedCell.X).DataCandidates.Clear()
+
+            'Brute Force Board. 
+            Tempboard = BruteForce(Tempboard)
+
+            count += 1
+        Loop While isBoardSolved(Tempboard) Or count = CandidateIndexMax
+
+        Return Tempboard
+
+
+
+    End Function
 
 
 End Class

@@ -105,11 +105,11 @@ Partial Public Class Gameboard
     'Label input handler
     Public Sub InputLbl(ByVal sender As Label, e As System.EventArgs)
         'Input handler for Labels.
-        SelectLabelAllocation(sender.Tag)
+        AllocateSelectLbl(sender.Tag)
     End Sub
 
     'Preforms the logic for showing which label has been recently clicked
-    Public Sub SelectLabelAllocation(ParentCell As Display_Cells)
+    Public Sub AllocateSelectLbl(ParentCell As Display_Cells)
 
         If Not IsNothing(LastClicked) Then
             LastClicked.SelectedLabel.Visible = False
@@ -131,7 +131,7 @@ Partial Public Class Gameboard
     End Sub
 
     'Handles the logic for adding and removing candidates and value labels from cells by the Keypads
-    Public Sub InputKeypad(ByVal sender As Button, e As System.EventArgs)
+    Public Sub Keypad_Input(ByVal sender As Button, e As System.EventArgs)
         'Input handler for keypads
 
         Dim val = Integer.Parse(sender.Tag)
