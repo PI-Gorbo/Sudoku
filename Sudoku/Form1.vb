@@ -30,8 +30,6 @@ Public Class Form1
 
     End Sub
 
-
-
     Private Sub Btn_NewGame_Click(sender As Object, e As EventArgs) Handles Btn_NewGame.Click
         Game.NewGame()
 
@@ -41,21 +39,7 @@ Public Class Form1
         Game.UpdateKeypads()
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-
-        ObjBoard.CalculateCandidates(Game.Board.BaseBoardCells)
-        For rows = 0 To 8
-            For cols = 0 To 8
-                Game.Cells(rows, cols).DisplayCandidates = Game.Board.BaseBoardCells(rows, cols).DataCandidates.Clone()
-                Game.UpdateLabels(Game.Cells(rows, cols), 10, vbNull)
-            Next
-        Next
-
-        Game.UpdateKeypads()
-    End Sub
-
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-        'Lstbx.Items.Clear()
 
         For rows = 0 To 8
             For cols = 0 To 8
@@ -66,24 +50,22 @@ Public Class Form1
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
 
-        Dim _Continue As Boolean = True
-        Dim count As Integer = 0
-
-        Do Until Game.Board.BoardSolved(Game.Board.BaseBoardCells) = True Or _Continue = False 'Or count = 100
-
-            ObjBoard.ResolveCandidates(Game.Board.BaseBoardCells, _Continue, vbNull)
-            Game.Board.SetValues(Game.Board.BaseBoardCells)
-            'count += 1
-        Loop
-        Gameboard.UpdateDisplayValues(Game.Cells, Game.Board.BaseBoardCells)
-        Game.UpdateLabels(Game.Cells, Game.Board.BaseBoardCells)
-
-    End Sub
-
-    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
         Lstbx.Items.Clear()
 
-        Lstbx.Items.Add(Game.Board.BoardSolved(Game.Board.BaseBoardCells))
+        Dim _sol, _err As Boolean
+        Dim TempBoard(8, 8) As ObjCell
+        TempBoard = Game.Board.BaseBoardCells.Clone
+
+
+        Game.Board.BruteForce(TempBoard, _sol, _err)
+        If _err = True Then
+            MsgBox("Error with inputted board.")
+        Else
+
+        End If
+        Gameboard.UpdateDisplayValues(Game.Cells, TempBoard)
+        Game.UpdateLabels(Game.Cells, TempBoard)
+
 
     End Sub
 
