@@ -1,318 +1,501 @@
 ﻿Imports System.IO
+Public Class ObjCell
 
-Public Class ObjBoard
+    Public Value As Integer
+    Public HasValueFromImport As Boolean
+    Public DataCandidates As New ArrayList
+    Public Row As New ArrayList
+    Public Column As New ArrayList
+    Public Box As New ArrayList
+    Public CellLocation As Point
 
-	Public Filelist As New ArrayList
-	Public BaseBoardCells(8, 8) As ObjCell
+    Public Sub New()
+        HasValueFromImport = False
+        Value = -1
+        DataCandidates.Clear()
+        DataCandidates.Capacity = 9
 
-	'New: Gets board. Gives Newly Created Cells a get Value. gives them a location relative to the board. 
-	Public Sub New()
+        Row.Clear()
+        Row.Capacity = 9
+        Column.Clear()
+        Column.Capacity = 9
+        Box.Clear()
+        Box.Capacity = 9
 
-		Dim Dr As New DirectoryInfo("Boards")
-		For Each file In Dr.GetFiles()
-			Filelist.Add(file)
-		Next
+    End Sub
 
-	End Sub
 
-    Public Sub NewBoard()
+End Class
 
-        Dim r As New Random
-        Dim f = Convert.ToString(Filelist(r.Next(0, Filelist.Count)).Fullname)
-        Using reader As New StreamReader(f)
-            Dim line As String
+Public Class Board
 
-            For Rows = 0 To 8
-                line = reader.ReadLine
-                For Cols = 0 To 8
+    Public Cells(8, 8) As ObjCell
+    Public Rows(8) As ArrayList
+    Public Columns(8) As ArrayList
+    Public Box(2, 2) As ArrayList
 
-                    If IsNothing(BaseBoardCells(Rows, Cols)) = True Then
-                        BaseBoardCells(Rows, Cols) = New ObjCell
+    'Creates a board, and then adds the cells to each of the rows, cols and box. Also Gives the Cell its Location
+    Public Sub New()
+
+        Dim Box_rows As Integer = -1
+        Dim Box_cols As Integer = -1
+
+        For _rows = 0 To 8
+            For _cols = 0 To 8
+
+                'Creates a new cell
+                Cells(_rows, _cols) = New ObjCell
+                If IsNothing(Rows(_rows)) Then
+                    Rows(_rows) = New ArrayList
+                End If
+
+                'Adds the cell to the right row
+                Rows(_rows).Add(Cells(_rows, _cols))
+                Cells(_rows, _cols).Row = Rows(_rows)
+
+                If IsNothing(Columns(_cols)) Then
+                    Columns(_cols) = New ArrayList
+                End If
+
+                'Adds the cell to the right column
+                Columns(_cols).Add(Cells(_rows, _cols))
+                Cells(_rows, _cols).Column = Columns(_cols)
+
+                If _rows <= 2 Then
+
+                    Box_rows = 0
+
+                ElseIf _rows >= 3 And _rows <= 5 Then
+
+                    Box_rows = 1
+
+                ElseIf _rows >= 6 Then
+
+                    Box_rows = 2
+
+                End If
+
+                If _cols <= 2 Then
+
+                    Box_cols = 0
+
+                ElseIf _cols >= 3 And _cols <= 5 Then
+
+                    Box_cols = 1
+
+                ElseIf _cols >= 6 Then
+
+                    Box_cols = 2
+
+                End If
+
+                If IsNothing(Box(Box_rows, Box_cols)) Then
+
+                    Box(Box_rows, Box_cols) = New ArrayList
+
+                End If
+
+                'Adds the cell to the correct box.
+                Box(Box_rows, Box_cols).Add(Cells(_rows, _cols))
+                Cells(_rows, _cols).Box = Box(Box_rows, Box_cols)
+
+                Cells(_rows, _cols).CellLocation = New Point(_cols, _rows)
+
+            Next
+        Next
+
+    End Sub
+
+    'Creates a copy of a board from inputted board
+    Public Sub New(OriginalBoard As Board)
+
+        Dim Box_rows As Integer = -1
+        Dim Box_cols As Integer = -1
+
+        For _rows = 0 To 8
+            For _cols = 0 To 8
+
+                Cells(_rows, _cols) = New ObjCell
+                Cells(_rows, _cols).Value = OriginalBoard.Cells(_rows, _cols).Value
+                Cells(_rows, _cols).HasValueFromImport = OriginalBoard.Cells(_rows, _cols).HasValueFromImport
+
+                For Each ele In OriginalBoard.Cells(_rows, _cols).DataCandidates
+                    Cells(_rows, _cols).DataCandidates.Add(ele)
+                Next
+
+                Cells(_rows, _cols).CellLocation.X = OriginalBoard.Cells(_rows, _cols).CellLocation.X
+                Cells(_rows, _cols).CellLocation.Y = OriginalBoard.Cells(_rows, _cols).CellLocation.Y
+
+                If IsNothing(Rows(_rows)) Then
+                    Rows(_rows) = New ArrayList
+                End If
+
+                'Adds the cell to the right row
+                Rows(_rows).Add(Cells(_rows, _cols))
+                Cells(_rows, _cols).Row = Rows(_rows)
+
+                If IsNothing(Columns(_cols)) Then
+                    Columns(_cols) = New ArrayList
+                End If
+
+                'Adds the cell to the right column
+                Columns(_cols).Add(Cells(_rows, _cols))
+                Cells(_rows, _cols).Column = Columns(_cols)
+
+                If _rows <= 2 Then
+
+                    Box_rows = 0
+
+                ElseIf _rows >= 3 And _rows <= 5 Then
+
+                    Box_rows = 1
+
+                ElseIf _rows >= 6 Then
+
+                    Box_rows = 2
+
+                End If
+
+                If _cols <= 2 Then
+
+                    Box_cols = 0
+
+                ElseIf _cols >= 3 And _cols <= 5 Then
+
+                    Box_cols = 1
+
+                ElseIf _cols >= 6 Then
+
+                    Box_cols = 2
+
+                End If
+
+                If IsNothing(Box(Box_rows, Box_cols)) Then
+
+                    Box(Box_rows, Box_cols) = New ArrayList
+
+                End If
+
+                'Adds the cell to the correct box.
+                Box(Box_rows, Box_cols).Add(Cells(_rows, _cols))
+                Cells(_rows, _cols).Box = Box(Box_rows, Box_cols)
+
+            Next
+        Next
+    End Sub
+
+
+End Class
+
+Public Class BoardHandler
+
+    Public Filelist As New ArrayList
+    Public MainBoard As New Board
+    Public DifficultyDirectories(4) As String
+
+    Public Sub New()
+
+        DifficultyDirectories(0) = "Boards\Easy"
+        DifficultyDirectories(1) = "Boards\Medium"
+        DifficultyDirectories(2) = "Boards\Hard"
+        DifficultyDirectories(3) = "Boards\Evil"
+
+    End Sub
+
+    Public Sub NewBoard(ByVal Blank_Board As Boolean)
+
+        If Blank_Board = False Then
+            Dim Dr As New DirectoryInfo(DifficultyDirectories(Form1.DropDown_Difficulty.SelectedIndex))
+            For Each file In Dr.GetFiles()
+                Filelist.Add(file)
+            Next
+
+            Dim r As New Random
+            Dim f = Convert.ToString(Filelist(r.Next(0, Filelist.Count)).Fullname)
+            ''TODO --> REMOVES BOARDS ALREADY SEEN FROM LIST. MAYBE A NOTIFICATION TO THE USER IS REQ'D
+
+            Using reader As New StreamReader(f)
+                Dim line As String
+
+                For _rows = 0 To 8
+                    line = reader.ReadLine
+                    For _cols = 0 To 8
+
+                        If IsNothing(MainBoard.Cells(_rows, _cols)) = True Then
+                            MainBoard.Cells(_rows, _cols) = New ObjCell
+                        Else
+                            With MainBoard.Cells(_rows, _cols)
+                                .HasValueFromImport = False
+                                .Value = -1
+                                .DataCandidates.Clear()
+                            End With
+                        End If
+
+                        With MainBoard.Cells(_rows, _cols)
+
+                            If line(_cols) = "0" Then
+                                For i = 1 To 9
+                                    .DataCandidates.Add(i)
+                                    .Value = -1
+                                Next
+                            Else
+                                .Value = Integer.Parse(line(_cols))
+                                .HasValueFromImport = True
+                            End If
+
+                        End With
+                    Next
+                Next
+            End Using
+
+        Else
+            For _rows = 0 To 8
+                For _cols = 0 To 8
+
+                    If IsNothing(MainBoard.Cells(_rows, _cols)) = True Then
+                        MainBoard.Cells(_rows, _cols) = New ObjCell
                     Else
-                        With BaseBoardCells(Rows, Cols)
+                        With MainBoard.Cells(_rows, _cols)
                             .HasValueFromImport = False
                             .Value = -1
                             .DataCandidates.Clear()
                         End With
                     End If
 
-                    With BaseBoardCells(Rows, Cols)
+                    With MainBoard.Cells(_rows, _cols)
 
-                        If line(Cols) = "0" Then
-                            For i = 1 To 9
-                                .DataCandidates.Add(i)
-                                .Value = -1
-                            Next
-                        Else
-                            .Value = Integer.Parse(line(Cols))
-                            .HasValueFromImport = True
+                        For i = 1 To 9
+                            .DataCandidates.Add(i)
+                            .Value = -1
+                        Next
+                    End With
+                Next
+            Next
+        End If
+
+
+
+    End Sub
+
+    ''TODO --> Input Manual Board
+
+    '___________________________________________ Candidate Calculations ___________________________________________'
+
+    'Removes Candidates, Through Subtraction for an inputted board.
+    Public Sub CalculateCandidates(ByRef Board As Board, ByRef Continue_Calculating As Boolean, ByRef Error_Detected As Boolean)
+
+        'Form1.DebugBox.Items.Add(" ")
+        'Form1.DebugBox.Items.Add("Calculating Candidates")
+        'Form1.DebugBox.Items.Add(" ")
+
+        Continue_Calculating = False
+        Error_Detected = False
+        Dim Val As Integer = -1
+
+        For rows = 0 To 8
+            For cols = 0 To 8
+
+                If (Board.Cells(rows, cols).Value) <> -1 Then
+
+                    Val = Board.Cells(rows, cols).Value
+
+                    For Each ele As ObjCell In Board.Cells(rows, cols).Row
+                        ele.DataCandidates.Remove(Val)
+
+                        If ele.DataCandidates.Count = 1 Then
+                            Continue_Calculating = True
+                            'TODO --> Debug Statement
                         End If
 
-                    End With
+                        If ele.DataCandidates.Count = 0 And ele.Value = -1 Then
+                            Error_Detected = True
+                        End If
 
+                    Next
 
-                    If Rows >= 0 And Rows <= 2 Then
-                        BaseBoardCells(Rows, Cols).BoxLocation.Y = 0
-                    ElseIf Rows >= 3 And Rows <= 5 Then
-                        BaseBoardCells(Rows, Cols).BoxLocation.Y = 3
-                    Else
-                        BaseBoardCells(Rows, Cols).BoxLocation.Y = 6
+                    For Each ele As ObjCell In Board.Cells(rows, cols).Column
+                        ele.DataCandidates.Remove(Val)
+
+                        If ele.DataCandidates.Count = 1 Then
+                            Continue_Calculating = True
+                            'TODO --> Debug Statement
+                        End If
+
+                        If ele.DataCandidates.Count = 0 And ele.Value = -1 Then
+                            Error_Detected = True
+                        End If
+
+                    Next
+
+                    For Each ele As ObjCell In Board.Cells(rows, cols).Box
+                        ele.DataCandidates.Remove(Val)
+
+                        If ele.DataCandidates.Count = 1 Then
+                            Continue_Calculating = True
+                            'TODO --> Debug Statement
+                        End If
+
+                        If ele.DataCandidates.Count = 0 And ele.Value = -1 Then
+                            Error_Detected = True
+                        End If
+
+                    Next
+
+                End If
+            Next
+        Next
+
+    End Sub
+
+    'Finds any Cells that have a single candidate, Converts the cell's candidate into its value
+    Public Sub Convert_To_Values(ByRef Board As Board)
+
+        For rows = 0 To 8
+            For cols = 0 To 8
+                If Board.Cells(rows, cols).DataCandidates.Count = 1 Then
+
+                    ''TODO --> DEBUG STATEMENT
+
+                    Board.Cells(rows, cols).Value = Board.Cells(rows, cols).DataCandidates(0)
+                    Board.Cells(rows, cols).DataCandidates.Clear()
+                End If
+            Next
+        Next
+
+    End Sub
+
+    'Continually subtractively calculates candidates untill the board is either solved, or no more progress can be made.
+    Public Sub ResolveBoard(ByRef Board As Board, ByRef Board_Solved As Boolean, ByRef Error_Dectected As Boolean)
+
+        Board_Solved = False
+        Error_Dectected = False
+
+        Dim _Continue As Boolean = True
+        While _Continue = True
+
+            CalculateCandidates(Board, _Continue, Error_Dectected)
+            Convert_To_Values(Board)
+
+            If Error_Dectected = True Then
+                Form1.DebugBox.Items.Add("ERROR!")
+                Exit Sub
+            End If
+
+            If isBoardSolved(Board) = True Then
+                Form1.DebugBox.Items.Add("Exited Early")
+                Board_Solved = isBoardSolved(Board)
+                Exit Sub
+            End If
+
+        End While
+
+        Board_Solved = isBoardSolved(Board)
+
+    End Sub
+
+    '_______________________________________________ Board Validity _______________________________________________'
+
+    'Sweeps the board to check if the board has Solved.
+    Public Function isBoardSolved(Board As Board)
+
+        Form1.DebugBox.Items.Add("")
+        Form1.DebugBox.Items.Add("CHECKING SOLVED [...]")
+        Form1.DebugBox.Items.Add("")
+
+        For rows = 0 To 8
+            For cols = 0 To 8
+
+                For Each ele As ObjCell In Board.Cells(rows, cols).Row
+
+                    If ele.Equals(Board.Cells(rows, cols)) = True Then
+                        Continue For
                     End If
 
-                    If Cols >= 0 And Cols <= 2 Then
-                        BaseBoardCells(Rows, Cols).BoxLocation.X = 0
-                    ElseIf Cols >= 3 And Cols <= 5 Then
-                        BaseBoardCells(Rows, Cols).BoxLocation.X = 3
-                    Else
-                        BaseBoardCells(Rows, Cols).BoxLocation.X = 6
+                    If ele.Value = Board.Cells(rows, cols).Value Or ele.Value = -1 Then
+
+                        ''TODO --> DEBUG STATEMENT
+                        Return False
                     End If
 
-                    BaseBoardCells(Rows, Cols).CellLocation = New Point(Cols, Rows)
+                Next
 
-                    'PrintCandidates(BaseBoardCells(Rows, Cols))
+                For Each ele As ObjCell In Board.Cells(rows, cols).Column
+
+                    If ele.Equals(Board.Cells(rows, cols)) = True Then
+                        Continue For
+                    End If
+
+                    If ele.Value = Board.Cells(rows, cols).Value Or ele.Value = -1 Then
+
+                        ''TODO --> DEBUG STATEMENT
+                        Return False
+                    End If
+
+                Next
+
+                For Each ele As ObjCell In Board.Cells(rows, cols).Box
+
+                    If ele.Equals(Board.Cells(rows, cols)) = True Then
+                        Continue For
+                    End If
+
+                    If ele.Value = Board.Cells(rows, cols).Value Or ele.Value = -1 Then
+
+                        ''TODO --> DEBUG STATEMENT
+                        Return False
+                    End If
 
                 Next
             Next
-        End Using
-    End Sub
-
-    Public Sub InputManualBoard()
-
-	End Sub
-
-	'Calculates which candidates must be removed from each cell
-	Shared Sub CalculateCandidates(ByVal Cells(,) As ObjCell)
-
-		For rows = 0 To 8
-			For cols = 0 To 8
-
-				If (Cells(rows, cols).Value) <> -1 Then
-
-					For TEMPROWS = 0 To 8
-						Cells(TEMPROWS, cols).DataCandidates.Remove(Cells(rows, cols).Value)
-					Next
-
-					For TEMPCOLS = 0 To 8
-						Cells(rows, TEMPCOLS).DataCandidates.Remove(Cells(rows, cols).Value)
-					Next
-
-					For TEMPROWS_ = Cells(rows, cols).BoxLocation.Y To Cells(rows, cols).BoxLocation.Y + 2
-						For TEMPCOLS_ = Cells(rows, cols).BoxLocation.X To Cells(rows, cols).BoxLocation.X + 2
-							Cells(TEMPROWS_, TEMPCOLS_).DataCandidates.Remove(Cells(rows, cols).Value)
-						Next
-					Next
-
-				End If
-			Next
-		Next
-
-	End Sub
-
-    ''' <summary>
-    ''' Calculates the Candidates that are possible for a current board. But also returns if a value has changed and if the board is invalid 
-    ''' </summary>
-    ''' <param name="Cells"> Valid 8x8 cell array </param>
-    ''' <param name="ValueToBeChanged"> A byVal bool that returns if a value needs to be changed </param>
-    ''' <param name="InvalidBoard"> A byVal bool that retuns if a value needs to be changed </param>
-    Shared Sub ResolveCandidates(ByRef Cells(,) As ObjCell, ByRef ValueToBeChanged As Boolean, ByRef InvalidBoard As Boolean)
-
-        Form1.Lstbx.Items.Add(" ")
-        Form1.Lstbx.Items.Add("CALCULATING CADIDATES [...]")
-        Form1.Lstbx.Items.Add(" ")
-
-        ValueToBeChanged = False
-        InvalidBoard = False
-
-        For rows = 0 To 8
-            For cols = 0 To 8
-
-                If (Cells(rows, cols).Value) <> -1 Then
-
-                    For TEMPROWS = 0 To 8
-                        Cells(TEMPROWS, cols).DataCandidates.Remove(Cells(rows, cols).Value)
-                        If Cells(TEMPROWS, cols).DataCandidates.Count = 1 And ValueToBeChanged = False Then
-                            ValueToBeChanged = True
-                            Form1.Lstbx.Items.Add("Found a Cell that can be upgraded at [ " + Convert.ToString(TEMPROWS) + " " + Convert.ToString(cols) + " ]")
-                        End If
-
-                        If Cells(TEMPROWS, cols).DataCandidates.Count = 0 And Cells(TEMPROWS, cols).Value = -1 And InvalidBoard = False Then
-                            Form1.Lstbx.Items.Add(1)
-                            InvalidBoard = True
-                        End If
-                    Next
-
-                    For TEMPCOLS = 0 To 8
-                        Cells(rows, TEMPCOLS).DataCandidates.Remove(Cells(rows, cols).Value)
-                        If Cells(rows, TEMPCOLS).DataCandidates.Count = 1 And ValueToBeChanged = False Then
-                            Form1.Lstbx.Items.Add("Found a Cell that can be upgraded at [ " + Convert.ToString(rows) + " " + Convert.ToString(TEMPCOLS) + " ]")
-                            ValueToBeChanged = True
-                        End If
-
-                        If Cells(rows, TEMPCOLS).DataCandidates.Count = 0 And Cells(rows, TEMPCOLS).Value = -1 And InvalidBoard = False Then
-                            Form1.Lstbx.Items.Add(2)
-
-                            InvalidBoard = True
-                        End If
-                    Next
-
-                    For TEMPROWS_ = Cells(rows, cols).BoxLocation.Y To Cells(rows, cols).BoxLocation.Y + 2
-                        For TEMPCOLS_ = Cells(rows, cols).BoxLocation.X To Cells(rows, cols).BoxLocation.X + 2
-                            Cells(TEMPROWS_, TEMPCOLS_).DataCandidates.Remove(Cells(rows, cols).Value)
-
-                            If Cells(TEMPROWS_, TEMPCOLS_).DataCandidates.Count = 1 And ValueToBeChanged = False Then
-                                Form1.Lstbx.Items.Add("Found a Cell that can be upgraded at [ " + Convert.ToString(TEMPROWS_) + " " + Convert.ToString(TEMPCOLS_) + " ]")
-                                ValueToBeChanged = True
-                            End If
-
-                            If Cells(TEMPROWS_, TEMPCOLS_).DataCandidates.Count = 0 And Cells(TEMPROWS_, TEMPCOLS_).Value = -1 And InvalidBoard = False Then
-                                Form1.Lstbx.Items.Add(3)
-
-                                InvalidBoard = True
-                            End If
-
-                        Next
-                    Next
-                End If
-            Next
-        Next
-    End Sub
-
-    'Prints the candiates in a certain cell
-    Public Sub PrintCandidates(ParentCell As ObjCell)
-
-        Dim str As String = "[ "
-        For Each ele In ParentCell.DataCandidates
-            str = str + Convert.ToString(ele) + ","
-        Next
-        str += "]"
-        Form1.Lstbx.Items.Add("[ " + Convert.ToString(ParentCell.CellLocation.X) + " " + Convert.ToString(ParentCell.CellLocation.Y) + " ] -->" + str)
-
-    End Sub
-
-    Public Sub DebugCellStatement(OCRow As Integer, OCCol As Integer, TCRow As Integer, TCCol As Integer, DebugStatement As String)
-        Form1.Lstbx.Items.Add("Cell [" + CStr(OCCol) + " " + CStr(OCRow) + "] --> Cell [" + CStr(TCCol) + " " + CStr(TCRow) + "] : " + DebugStatement)
-    End Sub
-
-    'Sweeps the board to check if the board has SOlved. Makes calls to isValidCell
-    Public Function isBoardSolved(Board As ObjCell(,))
-
-        Form1.Lstbx.Items.Add("")
-        Form1.Lstbx.Items.Add("CHECKING SOLVED [...]")
-        Form1.Lstbx.Items.Add("")
-
-
-
-        Dim solved As Boolean = False
-
-        For rows = 0 To 8
-            For cols = 0 To 8
-                solved = isValidCell(Board, rows, cols)
-                If solved = False Then
-
-                    Form1.Lstbx.Items.Add("FALSE!")
-
-                    Return False
-                End If
-            Next
         Next
 
-        Form1.Lstbx.Items.Add("TRUE!")
+        Form1.DebugBox.Items.Add("TRUE!")
 
         Return True
 
-    End Function
-
-    'Checks a cell's value against its rows, cols and box for any cell with the same value. If this is true, then the board is false
-    Public Function isValidCell(Board As ObjCell(,), rows As Integer, cols As Integer)
-
-        For TempRows = 0 To 8
-            If TempRows = rows Then
-                Continue For
-            End If
-            If Board(TempRows, cols).Value = Board(rows, cols).Value Or Board(TempRows, cols).Value = -1 Then
-                DebugCellStatement(cols, rows, cols, TempRows, "ERROR with Cell in column.")
-                Return False
-            End If
-        Next
-
-        For TempCols = 0 To 8
-            If TempCols = cols Then
-                Continue For
-            End If
-
-            If Board(rows, TempCols).Value = Board(rows, cols).Value Or Board(rows, TempCols).Value = -1 Then
-                DebugCellStatement(cols, rows, TempCols, rows, "ERROR with Cell in row.")
-                Return False
-            End If
-        Next
-
-        For TempRows = Board(rows, cols).BoxLocation.Y To Board(rows, cols).BoxLocation.Y + 2
-            For TempCols = Board(rows, cols).BoxLocation.X To Board(rows, cols).BoxLocation.X + 2
-
-                If TempRows = rows And TempCols = cols Then
-                    Continue For
-                End If
-
-                If Board(TempRows, TempCols).Value = Board(rows, cols).Value Or Board(TempRows, TempCols).Value = -1 Then
-                    DebugCellStatement(cols, rows, TempCols, TempRows, "ERROR with Cell in box.")
-                    Return False
-                End If
-            Next
-        Next
-        Return True
     End Function
 
     'Returns True of the Board inputted has no empty candidate Cells, and no Duplicate values 
-    Public Function isBoardValid(Board As ObjCell(,))
+    Public Function isBoardValid(Board As Board)
 
-        Form1.Lstbx.Items.Add(" ")
-        Form1.Lstbx.Items.Add("CHECKING VALIDITY [...]")
-        Form1.Lstbx.Items.Add(" ")
+        Form1.DebugBox.Items.Add(" ")
+        Form1.DebugBox.Items.Add("CHECKING VALIDITY [...]")
+        Form1.DebugBox.Items.Add(" ")
 
         Dim NumberOfClues As Integer = 0
 
         For rows = 0 To 8
             For cols = 0 To 8
 
-                If Board(rows, cols).Value <> -1 Then
+                If Board.Cells(rows, cols).Value <> -1 Then
                     NumberOfClues += 1
                 End If
 
                 'Checks if there are no empty candidates when the cell does not have a value
-                If Board(rows, cols).DataCandidates.Count = 0 And Board(rows, cols).Value = -1 Then
-                    Form1.Lstbx.Items.Clear()
-                    Form1.Lstbx.Items.Add("Error with a Cell having no candidates and no Value")
+                If Board.Cells(rows, cols).DataCandidates.Count = 0 And Board.Cells(rows, cols).Value = -1 Then
+                    ''TODO --> DEBUG STATEMENT
                     Return False
                 End If
 
-                'Checks every col and row a cell has access to. Returns false the Cell has the same value as any other cell selected. 
-                For TempRows = 0 To 8
-                    If Board(TempRows, cols).Value = Board(rows, cols).Value And Board(rows, cols).Value <> -1 And Board(TempRows, cols).Equals(Board(rows, cols)) = False Then
-                        Form1.Lstbx.Items.Clear()
-                        DebugCellStatement(cols, rows, cols, TempRows, "ERROR with Cell in col.")
+                For Each ele As ObjCell In Board.Cells(rows, cols).Row
+                    If ele.Value = Board.Cells(rows, cols).Value And Board.Cells(rows, cols).Value <> -1 And ele.Equals(Board.Cells(rows, cols)) = False Then
+                        ''DEBUG STATEMENT
                         Return False
                     End If
                 Next
 
-                For TempCols = 0 To 8
-                    If Board(rows, TempCols).Value = Board(rows, cols).Value And Board(rows, cols).Value <> -1 And Board(rows, TempCols).Equals(Board(rows, cols)) = False Then
-                        Form1.Lstbx.Items.Clear()
-                        DebugCellStatement(cols, rows, TempCols, rows, "ERROR with Cell in row.")
+                For Each ele As ObjCell In Board.Cells(rows, cols).Column
+                    If ele.Value = Board.Cells(rows, cols).Value And Board.Cells(rows, cols).Value <> -1 And ele.Equals(Board.Cells(rows, cols)) = False Then
+                        ''DEBUG STATEMENT
                         Return False
                     End If
                 Next
 
-                'Checks every cell in the orginial cell's box to check if they dont have the same value as it. 
-                For TempRows = Board(rows, cols).BoxLocation.Y To Board(rows, cols).BoxLocation.Y + 2
-                    For TempCols = Board(rows, cols).BoxLocation.X To Board(rows, cols).BoxLocation.X + 2
-
-                        If Board(TempRows, TempCols).Value = Board(rows, cols).Value And Board(rows, cols).Value <> -1 And Board(rows, TempCols).Equals(Board(rows, cols)) = False Then
-                            Form1.Lstbx.Items.Clear()
-                            DebugCellStatement(cols, rows, cols, TempRows, "ERROR with Cell in box.")
-                            Return False
-                        End If
-
-                    Next
+                For Each ele As ObjCell In Board.Cells(rows, cols).Box
+                    If ele.Value = Board.Cells(rows, cols).Value And Board.Cells(rows, cols).Value <> -1 And ele.Equals(Board.Cells(rows, cols)) = False Then
+                        ''DEBUG STATEMENT
+                        Return False
+                    End If
                 Next
 
             Next
@@ -322,79 +505,14 @@ Public Class ObjBoard
             Return False
         End If
 
-        Form1.Lstbx.Items.Add("Board Valid!")
+        ''TODO --> DEBUG STATEMENT (BOARD COMPLETE)
         Return True
 
     End Function
 
-    'If the Cell has one candidate in it, it can be deduced tha the candidate has to be the value of the cell. Therefore, set the candidate to the value of the cell.
-    Public Sub ResolveValues(Board As ObjCell(,))
+    '______________________________________________ Board AutoSolving _____________________________________________'
 
-		For rows = 0 To 8
-			For cols = 0 To 8
-				If Board(rows, cols).DataCandidates.Count = 1 Then
-					Form1.Lstbx.Items.Add("Cell at [ " + Convert.ToString(rows) + " " + Convert.ToString(cols) + " ]")
-					Board(rows, cols).Value = Board(rows, cols).DataCandidates(0)
-					Board(rows, cols).DataCandidates.Clear()
-				End If
-			Next
-		Next
-
-	End Sub
-
-    'Loop [ResolveCandidates] untill there is no progress in the board. Return solved or Error
-    Public Sub ResolveBoard(ByRef Board As ObjCell(,), ByRef solved As Boolean, ByRef _Err As Boolean)
-
-        solved = False
-        _Err = False
-
-        Dim _Continue As Boolean = True
-        While _Continue = True
-
-            ResolveCandidates(Board, _Continue, _Err)
-            ResolveValues(Board)
-
-            If _Err = True Then
-                Form1.Lstbx.Items.Add("ERROR!")
-                Exit Sub
-            End If
-
-            If isBoardSolved(Board) = True Then
-                Form1.Lstbx.Items.Add("Exited Early")
-                solved = isBoardSolved(Board)
-                Exit Sub
-            End If
-
-        End While
-
-        solved = isBoardSolved(Board)
-
-    End Sub
-    'Deep Copies An array of ObjCells to Another ObjCell
-
-    Public Sub DeepClone(ByRef Tempboard(,) As ObjCell, ByRef OrigBoard(,) As ObjCell)
-        For rows = 0 To 8
-            For cols = 0 To 8
-                Tempboard(rows, cols) = New ObjCell
-                Tempboard(rows, cols).BoxLocation.X = OrigBoard(rows, cols).BoxLocation.X
-                Tempboard(rows, cols).BoxLocation.Y = OrigBoard(rows, cols).BoxLocation.Y
-                Tempboard(rows, cols).CellLocation.X = OrigBoard(rows, cols).CellLocation.X
-                Tempboard(rows, cols).CellLocation.Y = OrigBoard(rows, cols).CellLocation.Y
-                Tempboard(rows, cols).DataCandidates.Clear()
-                For Each ele In OrigBoard(rows, cols).DataCandidates
-                    Tempboard(rows, cols).DataCandidates.Add(ele)
-                Next
-                Tempboard(rows, cols).Value = OrigBoard(rows, cols).Value
-                Tempboard(rows, cols).HasValueFromImport = OrigBoard(rows, cols).HasValueFromImport
-
-
-            Next
-        Next
-    End Sub
-    '__________________________________________________________________'
-
-    'Brute Force.
-    Function BruteForce(ByRef Board As ObjCell(,), ByRef _Solved As Boolean, ByRef _Error As Boolean)
+    Function BruteForce(ByRef Board As Board, ByRef _Solved As Boolean, ByRef _Error As Boolean)
 
         _Error = False
         _Solved = False
@@ -420,7 +538,7 @@ Public Class ObjBoard
             Dim TempSolved As Boolean = False
             Dim TempError As Boolean = False
             Dim SelectedLabelLocation As New Point(-1, -1)
-            Dim Tempboard(8, 8) As ObjCell
+            Dim Tempboard As Board
             Dim MaxCandidateIndex As Integer = -1
             Dim CurrentIndex As Integer = -1
 
@@ -433,7 +551,7 @@ Public Class ObjBoard
             For rows = 0 To 8
                 For cols = 0 To 8
 
-                    If Board(rows, cols).Value = -1 Then
+                    If Board.Cells(rows, cols).Value = -1 Then
                         SelectedLabelLocation.X = cols
                         SelectedLabelLocation.Y = rows
                         Exit For
@@ -443,7 +561,9 @@ Public Class ObjBoard
                     Exit For
                 End If
             Next
-            Form1.Lstbx.Items.Add("(((" + CStr(SelectedLabelLocation.X) + " " + CStr(SelectedLabelLocation.Y) + ")))")
+
+            ''TODO --> DEBUG STATEMENT
+
             If SelectedLabelLocation.X = -1 And SelectedLabelLocation.Y = -1 Then
                 _Error = True
                 _Solved = False
@@ -452,77 +572,125 @@ Public Class ObjBoard
 
 
             'Get the number of Candidates in the Selected Cell. Make a count starting at 0 
-            MaxCandidateIndex = Board(SelectedLabelLocation.Y, SelectedLabelLocation.X).DataCandidates.Count - 1
-                Form1.Lstbx.Items.Add(MaxCandidateIndex)
-                CurrentIndex = 0
+            MaxCandidateIndex = Board.Cells(SelectedLabelLocation.Y, SelectedLabelLocation.X).DataCandidates.Count - 1
+            'Form1.DebugBox.Items.Add(MaxCandidateIndex)
+            CurrentIndex = 0
 
-                'DO:
-                Do
-                    TempSolved = False
-                    TempError = False
+            'DO:
+            Do
+                TempSolved = False
+                TempError = False
 
-                    'Make a TempBoard that is the same as the orignial board. 
-                    DeepClone(Tempboard, Board)
+                'Make a TempBoard that is the same as the orignial board. 
+                Tempboard = New Board(Board)
 
-                    'Choose the (count) candidate of the Selected Cell and Make it the value of the cell. 
-                    PrintCandidates(Tempboard(SelectedLabelLocation.Y, SelectedLabelLocation.X))
-                    Tempboard(SelectedLabelLocation.Y, SelectedLabelLocation.X).Value = Tempboard(SelectedLabelLocation.Y, SelectedLabelLocation.X).DataCandidates(CurrentIndex)
-                    Tempboard(SelectedLabelLocation.Y, SelectedLabelLocation.X).DataCandidates.Clear()
+                'Choose the (count) candidate of the Selected Cell and Make it the value of the cell. 
 
-                    'Bruteforce the board
-                    BruteForce(Tempboard, TempSolved, TempError)
+                ''TODO --> DEBUG STATEMENT ABOUT WHICH CELL VALUE HAS BEEN CHOSEN
 
-                    'Check if the TempError Value is True. Then Clear the Tempboard. Count + 1, Next loop
-                    If TempError = True Then
-                        CurrentIndex += 1
-                        Continue Do
-                    End If
-                    'If TempSolved = True, Break the Loop and Set solved  = True. and Return the board. 
-                    If TempSolved = True Then
-                        Exit Do
-                    End If
-                    CurrentIndex += 1
+                Tempboard.Cells(SelectedLabelLocation.Y, SelectedLabelLocation.X).Value = Tempboard.Cells(SelectedLabelLocation.Y, SelectedLabelLocation.X).DataCandidates(CurrentIndex)
+                Tempboard.Cells(SelectedLabelLocation.Y, SelectedLabelLocation.X).DataCandidates.Clear()
 
-                    Form1.Lstbx.Items.Add("Current Index:: " + CStr(CurrentIndex))
+                'Bruteforce the board
+                BruteForce(Tempboard, TempSolved, TempError)
 
-                Loop While CurrentIndex <= MaxCandidateIndex
-                'END WHILE
-
-                DeepClone(Board, Tempboard)
-
+                'Check if the TempError Value is True. Then Clear the Tempboard. Count + 1, Next loop
                 If TempError = True Then
-                    _Error = True
-                    _Solved = False
-                    Return Board
+                    CurrentIndex += 1
+                    Continue Do
                 End If
-
+                'If TempSolved = True, Break the Loop and Set solved  = True. and Return the board. 
                 If TempSolved = True Then
-                    _Solved = True
-                    Return Board
+                    Exit Do
                 End If
+                CurrentIndex += 1
 
+                'Form1.DebugBox.Items.Add("Current Index:: " + CStr(CurrentIndex))
+
+            Loop While CurrentIndex <= MaxCandidateIndex
+            'END WHILE
+
+            Board = New Board(Tempboard)
+
+            If TempError = True Then
+                _Error = True
+                _Solved = False
+                Return Board
             End If
+
+            If TempSolved = True Then
+                _Solved = True
+                Return Board
+            End If
+
+        End If
+
     End Function
 
+    '____________________________________________ Debug and Manual Entry ___________________________________________'
 
-End Class
+    'Import manually entered board
+    Public Sub ManualBoardImport(Cells(,) As Display_Cells, ByRef valid As Boolean)
 
-Public Class ObjCell
-	Public Value As Integer
-    Public HasValueFromImport As Boolean
-    Public DataCandidates As New ArrayList
-	''NOTE ABOUT BOX LOCATION. THE X AND Y CO-ORDS ARE THE COLS AND ROWS RESPECTIVELY.
-	''THE X And Y VALUES REPRESENT THE LOCATION Of THE FIRST CELL In THAT BOX
-	''IF YOU WANT TO IDERATE THROUGH A BOX, IDERATE BY GOING FOR X TO X+2. SAME FOR Y
-	Public BoxLocation As Point
-	Public CellLocation As Point
+        For _rows = 0 To 8
+            For _cols = 0 To 8
+                If Cells(_rows, _cols).HasValueLabel Then
 
-    Public Sub New()
-        HasValueFromImport = False
-        Value = -1
-        DataCandidates.Clear()
-        DataCandidates.Capacity = 9
+                    MainBoard.Cells(_rows, _cols).Value = CInt(Cells(_rows, _cols).ValueLabel.Text)
+                    MainBoard.Cells(_rows, _cols).HasValueFromImport = True
+
+                End If
+            Next
+        Next
+
+        valid = isBoardValid(MainBoard)
     End Sub
 
+    'Save current board as new file
+    Public Sub SaveCurrentBoard()
+
+        Dim Currenttime = DateTime.Now.ToString("dd/MM/yyyy ss:mm:HH")
+        Dim filepath = My.Application.Info.DirectoryPath + "\Boards\Custom\" + Currenttime + ".txt"
+
+        Dim fs As FileStream = File.Create(filepath)
+        Dim objwriter As New StreamWriter(filepath)
+        'file = My.Computer.FileSystem.OpenTextFileWriter("Boards\Custom\" + Currenttime, False)
+
+        For rows = 0 To 8
+            Dim line As String = ""
+            For cols = 0 To 8
+
+                If MainBoard.Cells(rows, cols).Value <> -1 Then
+
+                    line += CStr(MainBoard.Cells(rows, cols).Value)
+                Else
+
+                    line += 0
+
+                End If
+                objwriter.WriteLine(line)
+            Next
+        Next
+        objwriter.Close()
+    End Sub
+
+    'Prints the candiates in a certain cell
+    Public Sub PrintCandidates(Board As Board)
+        Dim str As String
+        For rows = 0 To 8
+            For cols = 0 To 8
+
+                str = "[ "
+                For Each ele In Board.Cells(rows, cols).DataCandidates
+                    str = str + Convert.ToString(ele) + ","
+                Next
+                str += "]"
+                Form1.DebugBox.Items.Add("[ " + Convert.ToString(rows) + " " + Convert.ToString(cols) + " ] -->" + str)
+
+            Next
+        Next
+
+
+    End Sub
 
 End Class

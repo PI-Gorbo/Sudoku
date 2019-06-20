@@ -94,9 +94,15 @@ Partial Public Class Gameboard
 
     Shared Sub UpdateDisplayValues(ByRef Display(,) As Display_Cells, ByRef Data(,) As ObjCell)
 
+        Dim str As String
         For rows = 0 To 8
             For cols = 0 To 8
-                Display(rows, cols).DisplayCandidates = Data(rows, cols).DataCandidates.Clone()
+
+                Display(rows, cols).DisplayCandidates.Clear()
+
+                For Each ele In Data(rows, cols).DataCandidates
+                    Display(rows, cols).DisplayCandidates.Add(ele)
+                Next
             Next
         Next
 
@@ -201,7 +207,5 @@ Partial Public Class Gameboard
 
         End If
     End Sub
-
-
 
 End Class

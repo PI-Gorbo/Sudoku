@@ -2,42 +2,53 @@
 
 Public Class Gameboard
 
-    Public Const OriginX As Integer = 20
-    Public Const OriginY As Integer = 20
+    Public OriginX As Integer = Form1.Group_Menu.Location.X
+    Public OriginY As Integer = Form1.Group_Menu.Location.X + Form1.Group_Menu.Size.Height + 10
 
-    Public Const CANDIDATE_SIZEpx As Integer = 16
+    Public Const OuterPadding As Integer = 10
+
+    Public Const CANDIDATE_SIZEpx As Integer = 18
     Public Const CANDIDATE_PADDINGpx As Integer = 0
 
     Public Const TOTAL_CELL_SIZEpx As Integer = 3 * CANDIDATE_SIZEpx + 2 * CANDIDATE_PADDINGpx
-    Public Const CELL_PADDINGpx As Integer = 6
+    Public Const CELL_PADDINGpx As Integer = 3
 
     Public Const TOTAL_BOX_SIZEpx = 3 * TOTAL_CELL_SIZEpx + 2 * CELL_PADDINGpx
-    Public Const BOX_PADDINGpx As Integer = 12
+    Public Const BOX_PADDINGpx As Integer = 8
+
+    Public Const BOARDSIZE As Integer = 3 * TOTAL_BOX_SIZEpx + 2 * BOX_PADDINGpx - 12
 
     Public Cells(8, 8) As Display_Cells
-    Public Board As ObjBoard
+    Public Gameboard As BoardHandler
     Public LastClicked As Display_Cells
     Public Keypads As New ArrayList
 
     Public Sub New()
         'Create a new board
+        Gameboard = New BoardHandler
         LastClicked = Nothing
         CreateLabels()
-        Board = New ObjBoard
-        Board.NewBoard()
-        PrimeNewBoard()
+
         'Create 9x9 display cells object and add the datacell property to it. 
     End Sub
 
 
     Public Sub NewGame()
+
+        PrimeNewBoard()
         LastClicked = Nothing
-        Board.NewBoard()
+        Gameboard.NewBoard(False)
         PrimeNewBoard()
     End Sub
 
     'Takes the current board object and creates labels with the values on the board
     Public Sub CreateLabels()
+
+        Dim UpperboundY As Integer = OriginY
+        Dim LowerboundY As Integer = OriginY + BOARDSIZE
+        Dim LeftboundX As Integer = OriginX
+        Dim RightboundX As Integer = OriginX + BOARDSIZE
+
         LastClicked = Nothing
 
         For Rows = 0 To 8
@@ -54,7 +65,7 @@ Public Class Gameboard
                             .BackColor = Color.GhostWhite
                             .Size = New Size(CANDIDATE_SIZEpx, CANDIDATE_SIZEpx)
                             .Location = New Point(OriginX + (Math.Floor(Cols / 3) * BOX_PADDINGpx) + (Cols * (TOTAL_CELL_SIZEpx + CELL_PADDINGpx)) + (LblCols * (CANDIDATE_SIZEpx + CANDIDATE_PADDINGpx)), OriginY + (Math.Floor(Rows / 3) * BOX_PADDINGpx) + (Rows * (TOTAL_CELL_SIZEpx + CELL_PADDINGpx)) + (LblRows * (CANDIDATE_PADDINGpx + CANDIDATE_SIZEpx)))
-                            .Font = New Font("Symbol", CANDIDATE_SIZEpx * 0.65, FontStyle.Regular)
+                            .Font = New Font("Roboto", CANDIDATE_SIZEpx * 0.65, FontStyle.Regular)
                             .TextAlign = ContentAlignment.TopCenter
                             .BringToFront()
                         End With
@@ -71,7 +82,7 @@ Public Class Gameboard
                     .Location = New Point(Cells(Rows, Cols).Labels(0, 0).Location.X, Cells(Rows, Cols).Labels(0, 0).Location.Y)
                     .Size = New Size(TOTAL_CELL_SIZEpx, TOTAL_CELL_SIZEpx)
                     .BackColor = Color.White
-                    .Font = New Font("Symbol", 22, FontStyle.Bold)
+                    .Font = New Font("Roboto", CANDIDATE_SIZEpx * 1.5, FontStyle.Bold)
                     .TextAlign = ContentAlignment.MiddleCenter
                     .Enabled = False
                     .Visible = False
@@ -97,7 +108,11 @@ Public Class Gameboard
             Next
         Next
 
-
+        Form1.Group_Menu.Size = New Size(RightboundX + Form1.Group_Controls.Size.Width + OuterPadding, Form1.Group_Menu.Size.Height)
+        Form1.Group_Controls.Location = New Point(RightboundX + OriginX + OuterPadding, UpperboundY)
+        Form1.DebugBox.Location = New Point(RightboundX + 24 + OuterPadding + 10 + Form1.Group_Controls.Size.Width, Form1.Group_Menu.Height - 25)
+        Form1.DebugBox.Size = New Size(Form1.DebugBox.Size.Width, BOARDSIZE + Form1.Group_Menu.Size.Height + 45)
+        Form1.Size = New Size(Form1.DebugBox.Location.X + Form1.DebugBox.Size.Width + 30, LowerboundY + OriginY)
     End Sub
 
     'Takes an input board, and displays it on the screen.
@@ -108,7 +123,7 @@ Public Class Gameboard
         For Rows = 0 To 8
             For Cols = 0 To 8
 
-                Cells(Rows, Cols).DataCell = Board.BaseBoardCells(Rows, Cols)
+                Cells(Rows, Cols).DataCell = Gameboard.MainBoard.Cells(Rows, Cols)
                 ClearValues(Cells(Rows, Cols))
                 ClearCandidates(Cells(Rows, Cols))
                 Cells(Rows, Cols).ValueLabel.BackColor = Color.White
@@ -135,7 +150,7 @@ Public Class Gameboard
             .Enabled = True
             .Text = value
             If ParentCell.DataCell.HasValueFromImport = True Then
-                .ForeColor = Color.DarkCyan
+                .ForeColor = Color.FromArgb(1, 51, 121, 118)
             Else
                 .ForeColor = Color.Black
             End If
@@ -194,21 +209,52 @@ Public Class Gameboard
 
     End Sub
 
-    'TODO
-    Public Sub Choosedifficulty()
-        'Create a bit of logic to choose the difficulty for the user.
+    Public Sub PrimeForManualEntry()
+
+        Gameboard.NewBoard(True)
+        PrimeNewBoard()
+
     End Sub
 
-    'TODO
-    Public Sub PrimeForManualEntry()
-        'Ready the board for manual entry. Create some new buttons that tell the computer when the user is done with manual entry.
-        'Maybe a boolean value can be used to know what mode the game is in, so the input hander can know what is going on.
+    'Handles the interaction between user and computer for inputting a manual board
+    Public Sub FinaliseManualEntry()
 
-        'Build a board for manual entry. 
+        Dim result As DialogResult
+        Dim valid As Boolean = False
+        'Ask the user if they are sure they are done.
+        result = MessageBox.Show("Are you sure you are finished with manual entry? Yes will initialise the check for the validiity of the board.", "", MessageBoxButtons.YesNo)
+        If result = DialogResult.No Then
+            'If False, exit
+            Exit Sub
+        End If
 
-        'Load that board into the baseboard file so it can be auto solved.
-        'Then resume as normal.
-        'Potentially give the user an option to save their file.
+        'Takes inputted board and checks if it is valid, if it is not, then provides the option to retry entry
+        Gameboard.ManualBoardImport(Cells, valid)
+
+        If valid = False Then
+            result = MessageBox.Show("Inputted Board Invalid! Would you like to retry or cancel manual entry?", "", MessageBoxButtons.RetryCancel)
+            If result = DialogResult.Retry Then
+                Gameboard.NewBoard(True)
+                Exit Sub
+            Else
+                Gameboard.NewBoard(True)
+                PrimeNewBoard()
+                Exit Sub
+            End If
+        Else
+            result = MessageBox.Show("Board Valid! Would you like to save it as a custom board?. Boardname will be saved as a combination of time and date", "", MessageBoxButtons.YesNo)
+            If result = DialogResult.Yes Then
+                Gameboard.SaveCurrentBoard()
+                Exit Sub
+            Else
+                Exit Sub
+            End If
+
+        End If
+
+
+
+
     End Sub
 
 End Class

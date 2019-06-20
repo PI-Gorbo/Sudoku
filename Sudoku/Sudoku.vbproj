@@ -123,21 +123,30 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\Debug\Boards\Easy1.txt" />
-    <Content Include="bin\Debug\Boards\Easy2.txt" />
-    <Content Include="bin\Debug\Boards\Easy3.txt" />
-    <Content Include="bin\Debug\Boards\Easy4.txt" />
-    <Content Include="bin\Debug\Boards\Easy5.txt" />
-    <Content Include="bin\Debug\Boards\Extreme1.txt" />
-    <Content Include="bin\Debug\Boards\TextFile1.txt" />
-    <Content Include="bin\Debug\Evil\Evil1.txt" />
-    <Content Include="bin\Debug\Hard\Hard1.txt" />
-    <Content Include="bin\Debug\Medium\Med1.txt" />
+    <Content Include="bin\Debug\Boards\Easy\Easy1.txt" />
+    <Content Include="bin\Debug\Boards\Easy\Easy2.txt" />
+    <Content Include="bin\Debug\Boards\Easy\Easy3.txt" />
+    <Content Include="bin\Debug\Boards\Easy\Easy4.txt" />
+    <Content Include="bin\Debug\Boards\Easy\Easy5.txt" />
+    <Content Include="bin\Debug\Boards\Evil\VH1.txt" />
+    <Content Include="bin\Debug\Boards\Evil\VH10.txt" />
+    <Content Include="bin\Debug\Boards\Evil\VH2.txt" />
+    <Content Include="bin\Debug\Boards\Evil\VH3.txt" />
+    <Content Include="bin\Debug\Boards\Evil\VH4.txt" />
+    <Content Include="bin\Debug\Boards\Evil\VH5.txt" />
+    <Content Include="bin\Debug\Boards\Evil\VH6.txt" />
+    <Content Include="bin\Debug\Boards\Evil\VH7.txt" />
+    <Content Include="bin\Debug\Boards\Evil\VH8.txt" />
+    <Content Include="bin\Debug\Boards\Evil\VH9.txt" />
+    <Content Include="bin\Debug\Boards\Evil\Evil1.txt" />
+    <Content Include="bin\Debug\Boards\Hard\Hard1.txt" />
+    <Content Include="bin\Debug\Boards\Medium\Med1.txt" />
     <Content Include="bin\Debug\Sudoku.exe" />
     <Content Include="bin\Debug\Sudoku.pdb" />
     <Content Include="bin\Debug\Sudoku.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="bin\Debug\Boards\Custom\" />
     <Folder Include="bin\Release\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
