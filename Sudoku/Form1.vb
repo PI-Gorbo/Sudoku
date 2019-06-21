@@ -27,7 +27,8 @@ Public Class Form1
         Game.Keypads.Add(Keypad_9)
 
         Rad_Pencil.Checked = True
-
+        KeyPreview = True
+        BeginningState()
     End Sub
 
     Private Sub Btn_NewGame_Click(sender As Object, e As EventArgs) Handles Btn_NewGame.Click
@@ -126,4 +127,53 @@ Public Class Form1
 
     End Sub
 
+    'handles Form Keypresses and changes values accordingly
+    Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
+
+        If Btn_NewGame.Enabled = True Then
+            If IsNothing(Game.LastClicked) = False Then
+
+                If e.KeyCode >= 49 And e.KeyCode <= 57 Then
+
+                    Dim val As Integer
+
+                    If e.KeyCode = 49 Then
+                        val = 1
+                    ElseIf e.KeyCode = 50 Then
+                        val = 2
+                    ElseIf e.KeyCode = 51 Then
+                        val = 3
+                    ElseIf e.KeyCode = 52 Then
+                        val = 4
+                    ElseIf e.KeyCode = 53 Then
+                        val = 5
+                    ElseIf e.KeyCode = 54 Then
+                        val = 6
+                    ElseIf e.KeyCode = 55 Then
+                        val = 7
+                    ElseIf e.KeyCode = 56 Then
+                        val = 8
+                    ElseIf e.KeyCode = 57 Then
+                        val = 9
+
+                    End If
+
+                    Game.InputIntepreter(val)
+
+                End If
+            End If
+        End If
+    End Sub
+
+    Private Sub Btn_Debug_Click(sender As Object, e As EventArgs) Handles Btn_Debug.Click
+
+
+
+        Game.Gameboard.CalculateCandidates(Game.Gameboard.MainBoard, vbNull, vbNull)
+        Game.Gameboard.__CalculateIsolatedCandidates(Game.Gameboard.MainBoard, vbNull)
+        Game.Gameboard.Convert_To_Values(Game.Gameboard.MainBoard)
+        Gameboard.UpdateDisplayValues(Game.Cells, Game.Gameboard.MainBoard.Cells)
+        Game.UpdateLabels(Game.Cells, Game.Gameboard.MainBoard.Cells)
+
+    End Sub
 End Class

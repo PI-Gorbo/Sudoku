@@ -140,6 +140,13 @@ Partial Public Class Gameboard
         'Input handler for keypads
 
         Dim val = Integer.Parse(sender.Tag)
+        InputIntepreter(val)
+
+    End Sub
+
+    'Takes a value, and manages it but either adding it or removing it from the current selected cell
+    Public Sub InputIntepreter(val As Integer)
+
         If Form1.Rad_Pen.Checked = True Then
 
             If LastClicked.DataCell.HasValueFromImport = True Then
@@ -149,11 +156,13 @@ Partial Public Class Gameboard
             ElseIf LastClicked.HasValueLabel = True Then
 
                 ClearValues(LastClicked)
-                sender.BackColor = Color.White
+                Keypads(val - 1).BackColor = Color.White
+
             Else
 
                 DisplayValueLabel(LastClicked, val)
-                sender.BackColor = Color.DarkSalmon
+                Keypads(val - 1).BackColor = Color.DarkSalmon
+
             End If
 
         ElseIf Form1.Rad_Pencil.Checked = True Then
@@ -161,17 +170,20 @@ Partial Public Class Gameboard
             If LastClicked.DataCell.HasValueFromImport = True Then
                 Exit Sub
 
-            ElseIf sender.BackColor = Color.DarkSalmon Then
+            ElseIf Keypads(val - 1).BackColor = Color.DarkSalmon Then
                 UpdateLabels(LastClicked, val, True)
-                sender.BackColor = Color.White
+                Keypads(val - 1).BackColor = Color.White
             Else
                 UpdateLabels(LastClicked, val, False)
-                sender.BackColor = Color.DarkSalmon
+                Keypads(val - 1).BackColor = Color.DarkSalmon
             End If
 
         End If
 
+        UpdateKeypads()
+
     End Sub
+
 
     'Updates the Keypad to reflect the current cell clicked on 
     Public Sub UpdateKeypads()

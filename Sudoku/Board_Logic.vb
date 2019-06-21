@@ -282,8 +282,6 @@ Public Class BoardHandler
 
     End Sub
 
-    ''TODO --> Input Manual Board
-
     '___________________________________________ Candidate Calculations ___________________________________________'
 
     'Removes Candidates, Through Subtraction for an inputted board.
@@ -379,6 +377,7 @@ Public Class BoardHandler
         While _Continue = True
 
             CalculateCandidates(Board, _Continue, Error_Dectected)
+            __CalculateIsolatedCandidates(Board, _Continue)
             Convert_To_Values(Board)
 
             If Error_Dectected = True Then
@@ -395,6 +394,130 @@ Public Class BoardHandler
         End While
 
         Board_Solved = isBoardSolved(Board)
+
+    End Sub
+
+    'Finds any unique candidates in each row, column and box. Then sets that 
+    Public Sub __CalculateIsolatedCandidates(ByRef Board As Board, ByRef Continue_Solving As Boolean)
+
+        'Goes through each row in the inputted board
+        For rowcount = 0 To 8
+
+            'Goes through each possible number
+            For num = 1 To 9
+                'If the number is a value of the row, then exit
+                For Each ele As ObjCell In Board.Rows(rowcount)
+
+                    If ele.Value = num Then
+                        Exit For
+                    End If
+
+                Next
+
+                Dim tempcount As Integer = 0
+                Dim tempcell As ObjCell
+
+                'Checks if there is exactly 1 occourance of that candidate in the row, exits if there is more than 1
+                For Each ele As ObjCell In Board.Rows(rowcount)
+
+                    If ele.DataCandidates.Contains(num) Then
+                        If tempcount > 1 Then
+                            tempcell = Nothing
+                            Exit For
+                        Else
+                            tempcell = ele
+                            tempcount += 1
+                        End If
+                    End If
+
+                Next
+                'If there is exactly 1 occourance of the candidate in that row, then make that candidate the value of that cell.
+                If tempcount = 1 Then
+
+                    tempcell.DataCandidates.Clear()
+                    tempcell.DataCandidates.Add(num)
+                    Continue_Solving = True
+                End If
+            Next
+        Next
+
+        For colcount = 0 To 8
+
+            'Goes through each possible number
+            For num = 1 To 9
+                'If the number is a value of the row, then exit
+                For Each ele As ObjCell In Board.Columns(colcount)
+
+                    If ele.Value = num Then
+                        Exit For
+                    End If
+
+                Next
+
+                Dim tempcount As Integer = 0
+                Dim tempcell As ObjCell
+
+                'Checks if there is exactly 1 occourance of that candidate in the row, exits if there is more than 1
+                For Each ele As ObjCell In Board.Columns(colcount)
+
+                    If ele.DataCandidates.Contains(num) Then
+                        If tempcount > 1 Then
+                            tempcell = Nothing
+                            Exit For
+                        Else
+                            tempcell = ele
+                            tempcount += 1
+                        End If
+                    End If
+
+                Next
+                'If there is exactly 1 occourance of the candidate in that row, then make that candidate the value of that cell.
+                If tempcount = 1 Then
+                    tempcell.DataCandidates.Clear()
+                    tempcell.DataCandidates.Add(num)
+                End If
+            Next
+        Next
+
+        For BoxRows = 0 To 2
+            For BoxCols = 0 To 2
+
+                For num = 1 To 9
+                    'If the number is a value of the row, then exit
+                    For Each ele As ObjCell In Board.Box(BoxRows, BoxCols)
+
+                        If ele.Value = num Then
+                            Exit For
+                        End If
+
+                    Next
+
+                    Dim tempcount As Integer = 0
+                    Dim tempcell As ObjCell
+
+                    'Checks if there is exactly 1 occourance of that candidate in the row, exits if there is more than 1
+                    For Each ele As ObjCell In Board.Box(BoxRows, BoxCols)
+
+                        If ele.DataCandidates.Contains(num) Then
+                            If tempcount > 1 Then
+                                tempcell = Nothing
+                                Exit For
+                            Else
+                                tempcell = ele
+                                tempcount += 1
+                            End If
+                        End If
+
+                    Next
+                    'If there is exactly 1 occourance of the candidate in that row, then make that candidate the value of that cell.
+                    If tempcount = 1 Then
+                        tempcell.DataCandidates.Clear()
+                        tempcell.DataCandidates.Add(num)
+                    End If
+                Next
+
+            Next
+        Next
 
     End Sub
 
@@ -655,7 +778,7 @@ Public Class BoardHandler
     Public Sub SaveCurrentBoard()
 
         Dim Currenttime = DateTime.Now.ToString("dd_MM_yyyy__ss_mm_HH")
-        Dim filepath = "C:\Users\samgo\source\repos\sig-work\Sudoku\Sudoku\bin\Debug\Boards\Custom\" + Currenttime + ".txt"
+        Dim filepath = My.Application.Info.DirectoryPath + "\Boards\Custom\" + Currenttime + ".txt"
 
         File.Create(filepath).Dispose()
         Dim objwriter As New StreamWriter(filepath)
