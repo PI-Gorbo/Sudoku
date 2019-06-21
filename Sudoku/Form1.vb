@@ -2,6 +2,7 @@
 
 Public Class Form1
     Dim Game As Gameboard
+    Dim ValidForEntry As Boolean
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Game = New Gameboard
@@ -94,6 +95,7 @@ Public Class Form1
 
     Public Sub BeginningState()
 
+        ValidForEntry = False
         Btn_NewGame.Enabled = False
         Group_Controls.Enabled = False
         Btn_FinishEntry.Enabled = False
@@ -103,6 +105,7 @@ Public Class Form1
 
     Public Sub NormalPlay()
 
+        ValidForEntry = True
         Group_Controls.Enabled = True
         Btn_SolveBoard.Enabled = True
         Rad_Pencil.Enabled = True
@@ -115,6 +118,7 @@ Public Class Form1
 
     Public Sub ManualEntry()
 
+        ValidForEntry = True
         Group_Controls.Enabled = True
         Btn_SolveBoard.Enabled = False
         Btn_Debug.Enabled = False
@@ -130,7 +134,7 @@ Public Class Form1
     'handles Form Keypresses and changes values accordingly
     Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
 
-        If Btn_NewGame.Enabled = True Then
+        If ValidForEntry = True Then
             If IsNothing(Game.LastClicked) = False Then
 
                 If e.KeyCode >= 49 And e.KeyCode <= 57 Then
@@ -166,8 +170,6 @@ Public Class Form1
     End Sub
 
     Private Sub Btn_Debug_Click(sender As Object, e As EventArgs) Handles Btn_Debug.Click
-
-
 
         Game.Gameboard.CalculateCandidates(Game.Gameboard.MainBoard, vbNull, vbNull)
         Game.Gameboard.__CalculateIsolatedCandidates(Game.Gameboard.MainBoard, vbNull)
