@@ -94,7 +94,6 @@ Partial Public Class Gameboard
 
     Shared Sub UpdateDisplayValues(ByRef Display(,) As Display_Cells, ByRef Data(,) As ObjCell)
 
-        Dim str As String
         For rows = 0 To 8
             For cols = 0 To 8
 

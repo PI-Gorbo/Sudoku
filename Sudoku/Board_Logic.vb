@@ -191,7 +191,8 @@ Public Class BoardHandler
 
     Public Filelist As New ArrayList
     Public MainBoard As New Board
-    Public DifficultyDirectories(4) As String
+    Public DifficultyDirectories(5) As String
+    Public BoardChosen As String
 
     Public Sub New()
 
@@ -199,6 +200,7 @@ Public Class BoardHandler
         DifficultyDirectories(1) = "Boards\Medium"
         DifficultyDirectories(2) = "Boards\Hard"
         DifficultyDirectories(3) = "Boards\Evil"
+        DifficultyDirectories(4) = "Boards\Custom"
 
     End Sub
 
@@ -206,12 +208,15 @@ Public Class BoardHandler
 
         If Blank_Board = False Then
             Dim Dr As New DirectoryInfo(DifficultyDirectories(Form1.DropDown_Difficulty.SelectedIndex))
+            Filelist.Clear()
             For Each file In Dr.GetFiles()
                 Filelist.Add(file)
             Next
 
             Dim r As New Random
-            Dim f = Convert.ToString(Filelist(r.Next(0, Filelist.Count)).Fullname)
+            Dim x = r.Next(0, Filelist.Count)
+            Dim f = Convert.ToString(Filelist(x).Fullname)
+            BoardChosen = Filelist(x).ToString
             ''TODO --> REMOVES BOARDS ALREADY SEEN FROM LIST. MAYBE A NOTIFICATION TO THE USER IS REQ'D
 
             Using reader As New StreamReader(f)
@@ -501,7 +506,7 @@ Public Class BoardHandler
             Next
         Next
 
-        If NumberOfClues <= 17 Then
+        If NumberOfClues < 17 Then
             Return False
         End If
 
@@ -649,10 +654,10 @@ Public Class BoardHandler
     'Save current board as new file
     Public Sub SaveCurrentBoard()
 
-        Dim Currenttime = DateTime.Now.ToString("dd/MM/yyyy ss:mm:HH")
-        Dim filepath = My.Application.Info.DirectoryPath + "\Boards\Custom\" + Currenttime + ".txt"
+        Dim Currenttime = DateTime.Now.ToString("dd_MM_yyyy__ss_mm_HH")
+        Dim filepath = "C:\Users\samgo\source\repos\sig-work\Sudoku\Sudoku\bin\Debug\Boards\Custom\" + Currenttime + ".txt"
 
-        Dim fs As FileStream = File.Create(filepath)
+        File.Create(filepath).Dispose()
         Dim objwriter As New StreamWriter(filepath)
         'file = My.Computer.FileSystem.OpenTextFileWriter("Boards\Custom\" + Currenttime, False)
 
@@ -665,12 +670,14 @@ Public Class BoardHandler
                     line += CStr(MainBoard.Cells(rows, cols).Value)
                 Else
 
-                    line += 0
+                    line += "0"
 
                 End If
-                objwriter.WriteLine(line)
             Next
+            objwriter.WriteLine(line)
+
         Next
+
         objwriter.Close()
     End Sub
 

@@ -27,29 +27,17 @@ Public Class Form1
         Game.Keypads.Add(Keypad_9)
 
         Rad_Pencil.Checked = True
-        Btn_NewGame.Enabled = False
 
-        Group_Controls.Enabled = False
     End Sub
 
     Private Sub Btn_NewGame_Click(sender As Object, e As EventArgs) Handles Btn_NewGame.Click
 
-        DebugBox.Items.Add(My.Application.Info.DirectoryPath)
-        'Game.NewGame()
+        Game.NewGame()
 
     End Sub
 
     Private Sub Rad_Pen_CheckedChanged(sender As Object, e As EventArgs) Handles Rad_Pen.CheckedChanged
         Game.UpdateKeypads()
-    End Sub
-
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Btn_Debug.Click
-
-        'For rows = 0 To 8
-        '    For cols = 0 To 8
-        '        Game.Board.PrintCandidates(Game.Board.BaseBoardCells(rows, cols))
-        '    Next
-        'Next
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Btn_SolveBoard.Click
@@ -65,7 +53,7 @@ Public Class Form1
 
         Game.Gameboard.BruteForce(TempBoard, _sol, _err)
         If _err = True Then
-            MsgBox("Error with inputted board.")
+            MsgBox("Error with inputted board. : " + Game.Gameboard.BoardChosen)
         Else
 
         End If
@@ -103,7 +91,24 @@ Public Class Form1
 
     End Sub
 
+    Public Sub BeginningState()
+
+        Btn_NewGame.Enabled = False
+        Group_Controls.Enabled = False
+        Btn_FinishEntry.Enabled = False
+        Lbl_ManualEntryWarning.Visible = False
+
+    End Sub
+
     Public Sub NormalPlay()
+
+        Group_Controls.Enabled = True
+        Btn_SolveBoard.Enabled = True
+        Rad_Pencil.Enabled = True
+        Btn_Debug.Enabled = True
+        Btn_FinishEntry.Enabled = False
+        DropDown_Difficulty.Enabled = True
+        Lbl_ManualEntryWarning.Visible = False
 
     End Sub
 
@@ -116,6 +121,7 @@ Public Class Form1
         Rad_Pencil.Enabled = False
         Btn_NewGame.Enabled = False
         DropDown_Difficulty.Enabled = False
+        Rad_Pen.Checked = True
 
 
     End Sub

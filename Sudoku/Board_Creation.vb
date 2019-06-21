@@ -3,7 +3,7 @@
 Public Class Gameboard
 
     Public OriginX As Integer = Form1.Group_Menu.Location.X
-    Public OriginY As Integer = Form1.Group_Menu.Location.X + Form1.Group_Menu.Size.Height + 10
+    Public OriginY As Integer = Form1.Group_Menu.Location.X + Form1.Group_Menu.Size.Height + Form1.Lbl_FileName.Height + 10
 
     Public Const OuterPadding As Integer = 10
 
@@ -39,6 +39,7 @@ Public Class Gameboard
         LastClicked = Nothing
         Gameboard.NewBoard(False)
         PrimeNewBoard()
+        Form1.Lbl_FileName.Text = Gameboard.BoardChosen
     End Sub
 
     'Takes the current board object and creates labels with the values on the board
@@ -113,6 +114,7 @@ Public Class Gameboard
         Form1.DebugBox.Location = New Point(RightboundX + 24 + OuterPadding + 10 + Form1.Group_Controls.Size.Width, Form1.Group_Menu.Height - 25)
         Form1.DebugBox.Size = New Size(Form1.DebugBox.Size.Width, BOARDSIZE + Form1.Group_Menu.Size.Height + 45)
         Form1.Size = New Size(Form1.DebugBox.Location.X + Form1.DebugBox.Size.Width + 30, LowerboundY + OriginY)
+        Form1.Lbl_FileName.Location = New Point(RightboundX - RightboundX / 2 - LeftboundX + 5, Form1.Lbl_FileName.Location.Y)
     End Sub
 
     'Takes an input board, and displays it on the screen.
@@ -239,16 +241,18 @@ Public Class Gameboard
             Else
                 Gameboard.NewBoard(True)
                 PrimeNewBoard()
+                Form1.BeginningState()
                 Exit Sub
             End If
         Else
             result = MessageBox.Show("Board Valid! Would you like to save it as a custom board?. Boardname will be saved as a combination of time and date", "", MessageBoxButtons.YesNo)
             If result = DialogResult.Yes Then
                 Gameboard.SaveCurrentBoard()
-                Exit Sub
-            Else
-                Exit Sub
+                MsgBox("Board Saved!")
             End If
+            Form1.NormalPlay()
+            PrimeNewBoard()
+            Exit Sub
 
         End If
 
