@@ -1,4 +1,6 @@
 ﻿Imports System.IO
+Imports System.Threading
+
 Public Class ObjCell
 
     Public Value As Integer
@@ -191,6 +193,7 @@ Public Class BoardHandler
 
     Public Filelist As New ArrayList
     Public MainBoard As New Board
+    Public SolvedBoard As Board
     Public DifficultyDirectories(5) As String
     Public BoardChosen As String
 
@@ -206,7 +209,9 @@ Public Class BoardHandler
 
     Public Sub NewBoard(ByVal Blank_Board As Boolean)
 
+
         If Blank_Board = False Then
+
             Dim Dr As New DirectoryInfo(DifficultyDirectories(Form1.DropDown_Difficulty.SelectedIndex))
             Filelist.Clear()
             For Each file In Dr.GetFiles()
@@ -278,7 +283,18 @@ Public Class BoardHandler
             Next
         End If
 
+        SolvedBoard = New Board(MainBoard)
 
+        Dim Solved As Boolean = False
+        Dim _Error As Boolean = False
+
+        BruteForce(SolvedBoard, Solved, _Error)
+        If _Error = True Then
+            Form1.DebugBox.Items.Add("Error with loaded board.")
+        Else
+            Form1.DebugBox.Items.Clear()
+            Form1.DebugBox.Items.Add("Board Solved in Background!")
+        End If
 
     End Sub
 
@@ -755,6 +771,122 @@ Public Class BoardHandler
 
     End Function
 
+    'Public Sub BruteForce_Sub(ByRef SolvedStruct As ThreadingStruct)
+    '    SolvedStruct._Error = False
+    '    SolvedStruct.Solved = False
+
+    '    'Check if Board is Valid. If Invalid, escape and set Error to True. 
+    '    If isBoardValid(SolvedStruct.SolvedBoard) = False Then
+    '        SolvedStruct._Error = True
+    '        SolvedStruct.SolvedBoard = New Board(SolvedStruct.OiginalBoard)
+    '        Exit Sub
+    '    End If
+
+    '    'Eliminate Candidates 
+    '    ResolveBoard(SolvedStruct.SolvedBoard, SolvedStruct.Solved, SolvedStruct._Error)
+
+    '    'If _Error is true after Elimiating Candidates, Escape and Set Error To True
+    '    'Check if the Board is Solved, If True, Return the board and set _Solved to True. 
+    '    If SolvedStruct._Error = True Or SolvedStruct.Solved = True Then
+    '        Exit Sub
+    '    End If
+
+    '    '_________________________________'
+
+    '    If Not SolvedStruct.Solved Then
+    '        Dim TempSolved As Boolean = False
+    '        Dim TempError As Boolean = False
+    '        Dim SelectedLabelLocation As New Point(-1, -1)
+    '        Dim Tempboard As Board
+    '        Dim MaxCandidateIndex As Integer = -1
+    '        Dim CurrentIndex As Integer = -1
+
+    '        'At this point it is assumed that the board is valid and unsolved. 
+    '        'Candidates has been calculated, and therefore, we know that one of the candidates must be the correct one.
+
+
+    '        'Find a cell without a value. This cell will have 2 or more candidates and we know that one of them must be correct.
+    '        'Make this cell the "Selected Cell"
+    '        For rows = 0 To 8
+    '            For cols = 0 To 8
+
+    '                If SolvedStruct.OiginalBoard.Cells(rows, cols).Value = -1 Then
+    '                    SelectedLabelLocation.X = cols
+    '                    SelectedLabelLocation.Y = rows
+    '                    Exit For
+    '                End If
+    '            Next
+    '            If SelectedLabelLocation.X <> -1 And SelectedLabelLocation.Y <> -1 Then
+    '                Exit For
+    '            End If
+    '        Next
+
+    '        ''TODO --> DEBUG STATEMENT
+
+    '        If SelectedLabelLocation.X = -1 And SelectedLabelLocation.Y = -1 Then
+    '            SolvedStruct._Error = True
+    '            SolvedStruct.Solved = False
+    '            SolvedBoard = New Board(SolvedStruct.OiginalBoard)
+    '            Exit Sub
+    '        End If
+
+
+    '        'Get the number of Candidates in the Selected Cell. Make a count starting at 0 
+    '        MaxCandidateIndex = SolvedStruct.SolvedBoard.Cells(SelectedLabelLocation.Y, SelectedLabelLocation.X).DataCandidates.Count - 1
+    '        'Form1.DebugBox.Items.Add(MaxCandidateIndex)
+    '        CurrentIndex = 0
+
+    '        'DO:
+    '        Do
+    '            TempSolved = False
+    '            TempError = False
+
+    '            'Make a TempBoard that is the same as the orignial board. 
+    '            Tempboard = New Board(SolvedStruct.SolvedBoard)
+
+    '            'Choose the (count) candidate of the Selected Cell and Make it the value of the cell. 
+
+    '            ''TODO --> DEBUG STATEMENT ABOUT WHICH CELL VALUE HAS BEEN CHOSEN
+
+    '            Tempboard.Cells(SelectedLabelLocation.Y, SelectedLabelLocation.X).Value = Tempboard.Cells(SelectedLabelLocation.Y, SelectedLabelLocation.X).DataCandidates(CurrentIndex)
+    '            Tempboard.Cells(SelectedLabelLocation.Y, SelectedLabelLocation.X).DataCandidates.Clear()
+
+    '            'Bruteforce the board
+    '            BruteForce(Tempboard, TempSolved, TempError)
+
+    '            'Check if the TempError Value is True. Then Clear the Tempboard. Count + 1, Next loop
+    '            If TempError = True Then
+    '                CurrentIndex += 1
+    '                Continue Do
+    '            End If
+    '            'If TempSolved = True, Break the Loop and Set solved  = True. and Return the board. 
+    '            If TempSolved = True Then
+    '                Exit Do
+    '            End If
+    '            CurrentIndex += 1
+
+    '            'Form1.DebugBox.Items.Add("Current Index:: " + CStr(CurrentIndex))
+
+    '        Loop While CurrentIndex <= MaxCandidateIndex
+    '        'END WHILE
+
+    '        'THIS MAY BE UNESSICARY
+    '        SolvedStruct.SolvedBoard = New Board(Tempboard)
+
+    '        If TempError = True Then
+    '            SolvedStruct._Error = True
+    '            SolvedStruct.Solved = False
+    '            Exit Sub
+    '        End If
+
+    '        If TempSolved = True Then
+    '            SolvedStruct.Solved = True
+    '            Exit Sub
+    '        End If
+
+    '    End If
+    'End Sub
+
     '____________________________________________ Debug and Manual Entry ___________________________________________'
 
     'Import manually entered board
@@ -765,6 +897,7 @@ Public Class BoardHandler
                 If Cells(_rows, _cols).HasValueLabel Then
 
                     MainBoard.Cells(_rows, _cols).Value = CInt(Cells(_rows, _cols).ValueLabel.Text)
+                    MainBoard.Cells(_rows, _cols).DataCandidates.Clear()
                     MainBoard.Cells(_rows, _cols).HasValueFromImport = True
 
                 End If

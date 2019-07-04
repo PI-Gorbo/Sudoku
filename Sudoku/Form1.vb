@@ -1,9 +1,11 @@
 ﻿Imports System.IO
 
 Public Class Form1
+
     Dim Game As Gameboard
     Dim ValidForEntry As Boolean
 
+    'On form creation...
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Game = New Gameboard
 
@@ -32,40 +34,28 @@ Public Class Form1
         BeginningState()
     End Sub
 
+    'Creates a new Game
     Private Sub Btn_NewGame_Click(sender As Object, e As EventArgs) Handles Btn_NewGame.Click
-
+        NormalPlay()
         Game.NewGame()
-
     End Sub
 
+    'Updates which keypads are highlighted when the Pen option changes
     Private Sub Rad_Pen_CheckedChanged(sender As Object, e As EventArgs) Handles Rad_Pen.CheckedChanged
         Game.UpdateKeypads()
     End Sub
 
-    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Btn_SolveBoard.Click
+    'Solves the board
+    Private Sub SolveBoard(sender As Object, e As EventArgs) Handles Btn_SolveBoard.Click
 
-        DebugBox.Items.Clear()
-
-        Dim _sol, _err As Boolean
-        _sol = False
-        _err = False
-        Dim TempBoard As Board
-        TempBoard = New Board(Game.Gameboard.MainBoard)
-
-
-        Game.Gameboard.BruteForce(TempBoard, _sol, _err)
-        If _err = True Then
-            MsgBox("Error with inputted board. : " + Game.Gameboard.BoardChosen)
-        Else
-
-        End If
-        Gameboard.UpdateDisplayValues(Game.Cells, TempBoard.Cells)
-        Game.UpdateLabels(Game.Cells, TempBoard.Cells)
-
+        Gameboard.UpdateDisplayValues(Game.Cells, Game.Gameboard.SolvedBoard.Cells)
+        Game.UpdateLabels(Game.Cells, Game.Gameboard.SolvedBoard.Cells)
 
     End Sub
 
+    'Updates the board when the difficulty changes
     Private Sub DropDown_Difficulty_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DropDown_Difficulty.SelectedIndexChanged
+        NormalPlay()
 
         If Btn_NewGame.Enabled = False Then
             Btn_NewGame.Enabled = True
@@ -74,10 +64,10 @@ Public Class Form1
         Group_Controls.Enabled = True
 
         Game.NewGame()
-
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    'Primes board for manual entry
+    Private Sub Btn_ManualEntry_Click(sender As Object, e As EventArgs) Handles Btn_ManualEntry.Click
 
         Game.PrimeForManualEntry()
         Btn_FinishEntry.Enabled = True
@@ -87,19 +77,25 @@ Public Class Form1
 
     End Sub
 
+    'Finishes manual entry
     Private Sub Btn_FinishEntry_Click(sender As Object, e As EventArgs) Handles Btn_FinishEntry.Click
 
         Game.FinaliseManualEntry()
 
     End Sub
 
+    'Changes the state of the board so certain controls are enabled or disabled
     Public Sub BeginningState()
 
         ValidForEntry = False
         Btn_NewGame.Enabled = False
         Group_Controls.Enabled = False
+        Group_Solving.Enabled = False
         Btn_FinishEntry.Enabled = False
         Lbl_ManualEntryWarning.Visible = False
+        Group_settings.Enabled = False
+        Check_CandidateAltert.Enabled = True
+        Check_CandidateAltert.Checked = False
 
     End Sub
 
@@ -107,12 +103,17 @@ Public Class Form1
 
         ValidForEntry = True
         Group_Controls.Enabled = True
+        Group_Solving.Enabled = True
         Btn_SolveBoard.Enabled = True
         Rad_Pencil.Enabled = True
-        Btn_Debug.Enabled = True
+        Btn_PrelimSolve.Enabled = True
         Btn_FinishEntry.Enabled = False
         DropDown_Difficulty.Enabled = True
         Lbl_ManualEntryWarning.Visible = False
+        Group_settings.Enabled = True
+        Check_CandidateAltert.Enabled = True
+        Check_CandidateAltert.Checked = False
+
 
     End Sub
 
@@ -120,14 +121,15 @@ Public Class Form1
 
         ValidForEntry = True
         Group_Controls.Enabled = True
-        Btn_SolveBoard.Enabled = False
-        Btn_Debug.Enabled = False
+        Group_Solving.Enabled = False
         Lbl_ManualEntryWarning.Visible = True
         Rad_Pencil.Enabled = False
         Btn_NewGame.Enabled = False
         DropDown_Difficulty.Enabled = False
         Rad_Pen.Checked = True
-
+        Group_settings.Enabled = False
+        Check_CandidateAltert.Enabled = True
+        Check_CandidateAltert.Checked = False
 
     End Sub
 
@@ -169,7 +171,8 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub Btn_Debug_Click(sender As Object, e As EventArgs) Handles Btn_Debug.Click
+    'Does only the initial prelimiary reductions (subtraction and isolated candidates)
+    Private Sub PrelimSolve(sender As Object, e As EventArgs) Handles Btn_PrelimSolve.Click
 
         Game.Gameboard.CalculateCandidates(Game.Gameboard.MainBoard, vbNull, vbNull)
         Game.Gameboard.__CalculateIsolatedCandidates(Game.Gameboard.MainBoard, vbNull)
@@ -178,4 +181,38 @@ Public Class Form1
         Game.UpdateLabels(Game.Cells, Game.Gameboard.MainBoard.Cells)
 
     End Sub
+
+    'Debugs Candidates
+    Private Sub Btn_Debug_Click_1(sender As Object, e As EventArgs) Handles Btn_Debug.Click
+
+        DebugBox.Items.Clear()
+        Game.Gameboard.PrintCandidates(Game.Gameboard.MainBoard)
+
+    End Sub
+
+    'Changes the Highlight removed candidates checked button
+
+
+    Private Sub Check_Medusa_CheckedChanged(sender As Object, e As EventArgs) Handles Check_Medusa.CheckedChanged
+        Check_CandidateHighlighting.Checked = False
+
+        For Each ele As Button In Game.Keypads
+            ele.BackColor = Color.White
+        Next
+
+        Game.UpdateKeypads()
+
+
+    End Sub
+
+    Private Sub Check_CandidateHighlighting_CheckedChanged(sender As Object, e As EventArgs) Handles Check_CandidateHighlighting.CheckedChanged
+        Check_Medusa.Checked = False
+
+        For Each ele As Button In Game.Keypads
+            ele.BackColor = Color.White
+        Next
+
+        Game.UpdateKeypads()
+    End Sub
+
 End Class

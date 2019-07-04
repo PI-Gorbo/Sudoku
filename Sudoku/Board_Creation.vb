@@ -2,10 +2,10 @@
 
 Public Class Gameboard
 
-    Public OriginX As Integer = Form1.Group_Menu.Location.X
-    Public OriginY As Integer = Form1.Group_Menu.Location.X + Form1.Group_Menu.Size.Height + Form1.Lbl_FileName.Height + 10
+    Public Const UP As Integer = 12
 
-    Public Const OuterPadding As Integer = 10
+    Public OriginX As Integer = Form1.Group_Menu.Location.X
+    Public OriginY As Integer = Form1.Group_Menu.Location.X + Form1.Group_Menu.Size.Height + Form1.Lbl_FileName.Height + UP
 
     Public Const CANDIDATE_SIZEpx As Integer = 18
     Public Const CANDIDATE_PADDINGpx As Integer = 0
@@ -16,31 +16,48 @@ Public Class Gameboard
     Public Const TOTAL_BOX_SIZEpx = 3 * TOTAL_CELL_SIZEpx + 2 * CELL_PADDINGpx
     Public Const BOX_PADDINGpx As Integer = 8
 
-    Public Const BOARDSIZE As Integer = 3 * TOTAL_BOX_SIZEpx + 2 * BOX_PADDINGpx - 12
+    Public Const BOARDSIZE As Integer = 3 * TOTAL_BOX_SIZEpx + 2 * BOX_PADDINGpx + 2 * CELL_PADDINGpx
 
     Public Cells(8, 8) As Display_Cells
     Public Gameboard As BoardHandler
     Public LastClicked As Display_Cells
     Public Keypads As New ArrayList
+    Public Colours(9) As Color
 
     Public Sub New()
+
+        Colours(1) = Color.Orange
+        Colours(2) = Color.DarkMagenta
+        Colours(3) = Color.HotPink
+        Colours(4) = Color.DodgerBlue
+        Colours(5) = Color.Firebrick
+        Colours(6) = Color.LightGreen
+        Colours(7) = Color.MediumOrchid
+        Colours(8) = Color.PeachPuff
+        Colours(9) = Color.SlateGray
+
+        HighlightedCandidates.Clear()
+
         'Create a new board
         Gameboard = New BoardHandler
         LastClicked = Nothing
         CreateLabels()
 
         'Create 9x9 display cells object and add the datacell property to it. 
-    End Sub
-
+    End Sub 'Done
 
     Public Sub NewGame()
 
+        HighlightedCandidates.Clear()
         PrimeNewBoard()
         LastClicked = Nothing
         Gameboard.NewBoard(False)
         PrimeNewBoard()
         Form1.Lbl_FileName.Text = Gameboard.BoardChosen
-    End Sub
+        HighlightedCandidates.Clear()
+
+
+    End Sub 'done
 
     'Takes the current board object and creates labels with the values on the board
     Public Sub CreateLabels()
@@ -109,13 +126,23 @@ Public Class Gameboard
             Next
         Next
 
-        Form1.Group_Menu.Size = New Size(RightboundX + Form1.Group_Controls.Size.Width + OuterPadding, Form1.Group_Menu.Size.Height)
-        Form1.Group_Controls.Location = New Point(RightboundX + OriginX + OuterPadding, UpperboundY)
-        Form1.DebugBox.Location = New Point(RightboundX + 24 + OuterPadding + 10 + Form1.Group_Controls.Size.Width, Form1.Group_Menu.Height - 25)
-        Form1.DebugBox.Size = New Size(Form1.DebugBox.Size.Width, BOARDSIZE + Form1.Group_Menu.Size.Height + 45)
-        Form1.Size = New Size(Form1.DebugBox.Location.X + Form1.DebugBox.Size.Width + 30, LowerboundY + OriginY)
-        Form1.Lbl_FileName.Location = New Point(RightboundX - RightboundX / 2 - LeftboundX + 5, Form1.Lbl_FileName.Location.Y)
-    End Sub
+        'Form1.Group_Menu.Size = New Size(RightboundX + Form1.Group_Controls.Size.Width + OuterPadding, Form1.Group_Menu.Size.Height)
+        'Form1.Group_Controls.Location = New Point(RightboundX + OriginX + OuterPadding, UpperboundY)
+        'Form1.DebugBox.Location = New Point(RightboundX + 24 + OuterPadding + 10 + Form1.Group_Controls.Size.Width, Form1.Group_Menu.Height - 25)
+        'Form1.DebugBox.Size = New Size(Form1.DebugBox.Size.Width, BOARDSIZE + Form1.Group_Menu.Size.Height + 45)
+        'Form1.Size = New Size(Form1.DebugBox.Location.X + Form1.DebugBox.Size.Width + 30, LowerboundY + OriginY)
+        'Form1.Lbl_FileName.Location = New Point(RightboundX - RightboundX / 2 - LeftboundX + 5, Form1.Lbl_FileName.Location.Y)
+
+        With Form1
+            .Group_Menu.Size = New Size(RightboundX - OriginX + Form1.Group_Controls.Size.Width + UP, .Group_Menu.Height)
+            .Group_Controls.Location = New Point(RightboundX + UP, UpperboundY)
+            .Group_Solving.Location = New Point(RightboundX + UP, .Group_Controls.Location.Y + .Group_Controls.Size.Height + UP)
+            .Lbl_FileName.Location = New Point(RightboundX / 2 + OriginX, .Lbl_FileName.Location.Y)
+            .DebugBox.Size = New Size(.DebugBox.Width, LowerboundY)
+            .DebugBox.Location = New Point(OriginX + .Group_Menu.Width + UP, .Group_Menu.Location.Y)
+            .Size = New Size(.DebugBox.Location.X + .DebugBox.Size.Width + 2 * UP, .Size.Height)
+        End With
+    End Sub 'Done
 
     'Takes an input board, and displays it on the screen.
     Public Sub PrimeNewBoard()
@@ -130,6 +157,10 @@ Public Class Gameboard
                 ClearCandidates(Cells(Rows, Cols))
                 Cells(Rows, Cols).ValueLabel.BackColor = Color.White
 
+                For Each ele As Label In Cells(Rows, Cols).Labels
+                    ele.BackColor = Color.White
+                Next
+
                 If Cells(Rows, Cols).DataCell.HasValueFromImport = True Then
                     'Display Value Label
                     DisplayValueLabel(Cells(Rows, Cols), Cells(Rows, Cols).DataCell.Value)
@@ -137,8 +168,8 @@ Public Class Gameboard
                 End If
             Next
         Next
-
-    End Sub
+        UpdateKeypads()
+    End Sub 'Done
 
     'Sets up a value to be displayed on the Value Lablel. Disables The select label, Disables the Candidate Labels
     Public Sub DisplayValueLabel(ParentCell As Display_Cells, value As Integer)
@@ -167,7 +198,7 @@ Public Class Gameboard
                 End With
             Next
         Next
-    End Sub
+    End Sub 'Done
 
     'Clears the Value label as if the Cell was new, just like creation 
     Public Sub ClearValues(ParentCell As Display_Cells)
@@ -195,7 +226,7 @@ Public Class Gameboard
 
         End If
 
-    End Sub
+    End Sub 'Done
 
     'Clears the Candidates and Labels, as if the cell was new
     Public Sub ClearCandidates(ParentCell As Display_Cells)
@@ -209,14 +240,14 @@ Public Class Gameboard
 
         ParentCell.DisplayCandidates.Clear()
 
-    End Sub
+    End Sub 'Done
 
     Public Sub PrimeForManualEntry()
 
         Gameboard.NewBoard(True)
         PrimeNewBoard()
 
-    End Sub
+    End Sub 'Done
 
     'Handles the interaction between user and computer for inputting a manual board
     Public Sub FinaliseManualEntry()
@@ -259,7 +290,7 @@ Public Class Gameboard
 
 
 
-    End Sub
+    End Sub 'Done
 
 End Class
 
